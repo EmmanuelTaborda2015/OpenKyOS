@@ -11,29 +11,32 @@ class GenerarReporteInstalaciones {
     public $proyectos;
     public $proyectos_general;
 
-    public function __construct($sql, $proyectos) {
+    public function __construct($sql) {
 
         $this->miConfigurador = \Configurador::singleton();
         $this->miConfigurador->fabricaConexiones->setRecursoDB('principal');
         $this->miSql = $sql;
-        $this->proyectos = $proyectos;
 
         $_REQUEST['tiempo'] = time();
+        
+        $conexion = "interoperacion";
+        $this->esteRecursoDB = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexion);
 
+        $this->consultarParametrizacion();
         /**
          * 0. Estrucurar Desatelles Proyecto
          **/
-        $this->estruturarProyectos();
+//         $this->estruturarProyectos();
         
         /**
          * 1. Filtrar Proyectos a Reportear
          **/
-        $this->filtrarProyectos();
+//         $this->filtrarProyectos();
         
         /**
          * 2. Filtrar Actividades Paquetes de Trabajo
          **/
-        $this->detallarCamposPersonalizadosProyecto();
+//         $this->detallarCamposPersonalizadosProyecto();
 
         /**
          * 3. Obtener Paquetes de Trabajo
@@ -76,21 +79,20 @@ class GenerarReporteInstalaciones {
         $this->proyectos_general = $this->proyectos;
 
     }
-
+    
     public function obtenerDetalleProyectos() {
-
-        foreach ($this->proyectos as $key => $value) {
-
-            $urlDetalle = $this->crearUrlDetalleProyectos($value['id']);
-
-            $detalle = file_get_contents($urlDetalle);
-
-            $detalle = json_decode($detalle, true);
-
-            $this->proyectos[$key]['custom_fields'] = $detalle['custom_fields'];
-
-        }
-
+    
+    	foreach ($this->proyectos as $key => $value) {
+    
+    		$urlDetalle = $this->crearUrlDetalleProyectos($value['id_proyecto']);
+    
+    		$detalle = file_get_contents($urlDetalle);
+    
+    		$detalle = json_decode($detalle, true);
+    
+    		$this->proyectos[$key]["info"] = $detalle;
+    	}
+    
     }
 
     public function crearUrlDetalleProyectos($var = '') {
@@ -128,7 +130,7 @@ class GenerarReporteInstalaciones {
 
         foreach ($this->proyectos as $key => $value) {
 
-            $urlPaquetes = $this->crearUrlDetalleProyecto($value['id']);
+            $urlPaquetes = $this->crearUrlDetalleProyecto($value['id_proyecto']);
 
             $detalleProyecto = file_get_contents($urlPaquetes);
 
@@ -216,10 +218,13 @@ class GenerarReporteInstalaciones {
     public function obtenerActividades() {
         //var_dump($this->proyectos[2]['paquetesTrabajo']);exit;
         foreach ($this->proyectos as $key => $value) {
+        	var_dump($this->proyectos[4]);
+        	var_dump("/////////////////////////////////////////////////////////////////////////////////////////////");
+        	var_dump($this->proyectos[5]);die;
+        	
+        	foreach ($value['paquetesTrabajo'] as $llave => $valor) {
 
-            foreach ($value['paquetesTrabajo'] as $llave => $valor) {
-
-                //Avance y  estado instalación NOC
+                	//Avance y  estado instalación NOC
 
                 if ($valor['subject'] === 'Mesa de ayuda') {
 
@@ -775,10 +780,10 @@ $this->obtenerHijosPaquetesTrabajo($contenido, $key, $llave, $variable);
                     }
 
                 }
-
+                
+                
             }
-
-        }
+        }var_dump($valor['id']); die;
 
     }
 
@@ -846,7 +851,7 @@ $this->obtenerHijosPaquetesTrabajo($contenido, $key, $llave, $variable);
 
         foreach ($this->proyectos as $key => $value) {
 
-            $urlPaquetes = $this->crearUrlPaquetesTrabajo($value['id']);
+            $urlPaquetes = $this->crearUrlPaquetesTrabajo($value['id_proyecto']);
 
             $paquetesTrabajo = file_get_contents($urlPaquetes);
 
@@ -938,10 +943,29 @@ $this->obtenerHijosPaquetesTrabajo($contenido, $key, $llave, $variable);
         }
 
     }
+    
+    public function consultarParametrizacion() {
+    
+    	$cadenaSql = $this->miSql->getCadenaSql('consultarProyectosParametrizados');
+    	$proyectos = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+    	$this->proyectos = $proyectos;
+    
+    	foreach ($this->proyectos as $key => $value) {
+    
+    		$cadenaSql = $this->miSql->getCadenaSql('consultarCamposParametrizados', $value['id_proyecto']);
+    		$campos = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+    
+    		$this->proyectos[$key]['campos_parametrizados'] = $campos;
+    
+    	}
+    
+    	$this->obtenerDetalleProyectos();
+    
+    }
 
 }
 
-$miProcesador = new GenerarReporteInstalaciones($this->sql, $this->proyectos);
+$miProcesador = new GenerarReporteInstalaciones($this->sql);
 
 ?>
 

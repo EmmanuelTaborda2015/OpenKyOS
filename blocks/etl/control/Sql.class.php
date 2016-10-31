@@ -97,6 +97,24 @@ class Sql extends \Sql {
                 	$cadenaSql .= "fecha_registro::timestamp::date=(SELECT current_timestamp::timestamp::date)";
                 	
                 	break;
+                	
+                case 'consultarProyectosParametrizados':
+                	
+                	$cadenaSql = " SELECT DISTINCT tipo_proyecto, id_proyecto";
+                	$cadenaSql .= " FROM parametros.parametrizacion_reporte";
+                	$cadenaSql .= " WHERE estado_registro= TRUE";
+                	$cadenaSql .= " ORDER BY id_proyecto;";
+                	break;
+                	
+                case 'consultarCamposParametrizados':
+                	
+                	$cadenaSql = " SELECT DISTINCT pr.campo, pr.valor_campo, ";
+                	$cadenaSql .= " pr.valor_actividad, pr.info_hijos, cr.tipo,cr.sub_tipo,cr.nombre_formulario ";
+                	$cadenaSql .= " FROM parametros.parametrizacion_reporte AS pr ";
+                	$cadenaSql .= " JOIN parametros.campos_reporte as cr ON cr.identificador_campo=pr.campo";
+                	$cadenaSql .= " WHERE pr.estado_registro= TRUE";
+                	$cadenaSql .= " AND pr.id_proyecto='" . $variable . "'";
+                	break;
 		}
 		
 		return $cadenaSql;

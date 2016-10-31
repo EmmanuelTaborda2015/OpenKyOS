@@ -46,7 +46,10 @@ class Frontera {
 
 //         include_once $this->ruta . "frontera/parametrosReporte.php";
         
-        include_once $this->ruta . "entidad/consultarProyectos.php";
+//         include_once $this->ruta . "entidad/consultarProyectos.php";
+        
+        include_once $this->ruta . "entidad/generarReporte.php";
+        
     }
 }
 ?>
