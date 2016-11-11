@@ -157,7 +157,7 @@ class FormProcessor {
         );
 
         $cadenaSql = $this->miSql->getCadenaSql('registrarInformacionContrato', $arreglo);
-        $this->registro_info_contrato = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "acceso");
+        //$this->registro_info_contrato = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "acceso");
 
     }
 

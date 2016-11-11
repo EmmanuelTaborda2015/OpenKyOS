@@ -23,6 +23,7 @@ class GenerarDocumento {
     public $rutaAbsoluta;
     public $nombreContrato;
     public $esteRecursoDB;
+    public $esteRecursoDBPR;
     public $clausulas;
     public $beneficiario;
     public $esteRecursoOP;
@@ -41,6 +42,10 @@ class GenerarDocumento {
 
             $this->info_usuario['rol'][] = $rol;
         }
+
+        //Conexion a Base de Datos
+        $conexion = "produccion";
+        $this->esteRecursoDBPR = $this->miConfigurador->fabricaConexiones->getRecursoDB($conexion);
 
         //Conexion a Base de Datos
         $conexion = "interoperacion";
@@ -64,38 +69,37 @@ class GenerarDocumento {
 
         $this->obtenerInformacionBeneficiario();
 
-        /**
-         *  3. Estruturar Documento
-         **/
+        foreach ($this->beneficiario as $key => $value) {
 
-        $this->estruturaDocumento();
+            $this->estruturaDocumento($value);
 
-        /**
-         *  4. Crear PDF
-         **/
+            /**
+             *  4. Crear PDF
+             **/
 
-        $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
-        $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
-        $this->rutaURL .= '/archivos/contratos/';
-        $this->rutaAbsoluta .= '/archivos/contratos/';
-        $this->asosicarCodigoDocumento();
-        $this->crearPDF();
+            $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
+            $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
+            $this->rutaURL .= '/archivos/contratos/';
+            $this->rutaAbsoluta .= '/archivos/contratos/';
+            $this->asosicarCodigoDocumento($value['id_beneficiario']);
+            $this->crearPDF();
+            $arreglo = array(
+                'nombre_contrato' => $this->nombreContrato,
+                'ruta_contrato' => $this->rutaURL . $this->nombreContrato);
 
-        $arreglo = array(
-            'nombre_contrato' => $this->nombreContrato,
-            'ruta_contrato' => $this->rutaURL . $this->nombreContrato);
+            $cadenaSql = $this->miSql->getCadenaSql('registrarDocumentoContrato', $arreglo);
 
-        $cadenaSql = $this->miSql->getCadenaSql('registrarDocumentoContrato', $arreglo);
+            $this->registro_info_contrato = $this->esteRecursoDBPR->ejecutarAcceso($cadenaSql, "busqueda")[0];
 
-        $this->registro_info_contrato = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda")[0];
-
+        }
+        echo "Termine";exit;
         //$cadenaSql = $this->miSql->getCadenaSql('actualizarServicio', $this->registro_info_contrato['id']);
 
         //$this->actualizarServicio = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "acceso");
 
     }
 
-    public function asosicarCodigoDocumento() {
+    public function asosicarCodigoDocumento($beneficiario) {
 
         $this->prefijo = substr(md5(uniqid(time())), 0, 6);
         $cadenaSql = $this->miSql->getCadenaSql('consultarParametroContrato', '128');
@@ -103,18 +107,14 @@ class GenerarDocumento {
         $tipo_documento = $id_parametro['id_parametro'];
         $descripcion_documento = $id_parametro['id_parametro'] . '_' . $id_parametro['descripcion'];
         $nombre_archivo = str_replace(" ", "_", $descripcion_documento);
-        $this->nombreContrato = $_REQUEST['id_beneficiario'] . "_" . $nombre_archivo . "_" . $this->prefijo . '.pdf';
+        $this->nombreContrato = $beneficiario . "_" . $nombre_archivo . "_" . $this->prefijo . '.pdf';
 
     }
 
     public function obtenerInformacionBeneficiario() {
 
-        $cadenaSql = $this->miSql->getCadenaSql('consultaInformacionContrato');
-
-        $beneficiario = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-
-        $this->beneficiario = $beneficiario[0];
-        //var_dump($this->beneficiario);exit;
+        $cadenaSql = $this->miSql->getCadenaSql('ConsultaProduccionBeneficiarios');
+        $this->beneficiario = $this->esteRecursoDBPR->ejecutarAcceso($cadenaSql, "busqueda");
 
     }
 
@@ -131,117 +131,53 @@ class GenerarDocumento {
         $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'F');
 
     }
-    public function estruturaDocumento() {
-        unset($requisitos);
-        $arreglo = array(
-            'perfil_beneficiario' => $_REQUEST['tipo_beneficiario'],
-            'id_beneficiario' => $this->beneficiario['id_beneficiario'],
+    public function estruturaDocumento($beneficiario) {
 
-        );
-        $cadenaSql = $this->miSql->getCadenaSql('consultarValidacionRequisitos', $arreglo);
-
-        $requisitos = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
-
-        $cadenaSql = $this->miSql->getCadenaSql('consultaNombreProyecto', $this->beneficiario['urbanizacion']);
+        $cadenaSql = $this->miSql->getCadenaSql('consultaNombreProyecto', $beneficiario['urbanizacion']);
         $urbanizacion = $this->esteRecursoOP->ejecutarAcceso($cadenaSql, "busqueda");
         $urbanizacion = $urbanizacion[0];
 
         $cadenaSql = $this->miSql->getCadenaSql('consultarTipoDocumento', "Cédula de Ciudadanía");
-        $CodigoCedula = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+        $CodigoCedula = $this->esteRecursoDBPR->ejecutarAcceso($cadenaSql, "busqueda");
         $CodigoCedula = $CodigoCedula[0];
 
         $cadenaSql = $this->miSql->getCadenaSql('consultarTipoDocumento', "Tarjeta de Identidad");
-        $CodigoTargeta = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+        $CodigoTargeta = $this->esteRecursoDBPR->ejecutarAcceso($cadenaSql, "busqueda");
         $CodigoTargeta = $CodigoTargeta[0];
         {
 
             $anexo_dir = '';
 
-            if ($this->beneficiario['manzana'] != 0) {
-                $anexo_dir .= " Manzana  #" . $this->beneficiario['manzana'] . " - ";
+            if ($beneficiario['manzana'] != 0) {
+                $anexo_dir .= " Manzana  #" . $beneficiario['manzana'] . " - ";
             }
 
-            if ($this->beneficiario['bloque'] != 0) {
-                $anexo_dir .= " Bloque #" . $this->beneficiario['bloque'] . " - ";
+            if ($beneficiario['bloque'] != 0) {
+                $anexo_dir .= " Bloque #" . $beneficiario['bloque'] . " - ";
             }
 
-            if ($this->beneficiario['torre'] != 0) {
-                $anexo_dir .= " Torre #" . $this->beneficiario['torre'] . " - ";
+            if ($beneficiario['torre'] != 0) {
+                $anexo_dir .= " Torre #" . $beneficiario['torre'] . " - ";
             }
 
-            if ($this->beneficiario['casa_apartamento'] != 0) {
-                $anexo_dir .= " Casa/Apartamento #" . $this->beneficiario['casa_apartamento'];
+            if ($beneficiario['casa_apartamento'] != 0) {
+                $anexo_dir .= " Casa/Apartamento #" . $beneficiario['casa_apartamento'];
             }
 
         }
         {
-            $cedula = ($this->beneficiario['tipo_documento'] == $CodigoCedula['codigo']) ? '<b>(X)</b>' : '';
-            $targeta = ($this->beneficiario['tipo_documento'] == $CodigoTargeta['codigo']) ? '<b>(X)</b>' : '';
+            $cedula = ($beneficiario['tipo_documento'] == $CodigoCedula['codigo']) ? '<b>(X)</b>' : '';
+            $targeta = ($beneficiario['tipo_documento'] == $CodigoTargeta['codigo']) ? '<b>(X)</b>' : '';
         }
 
         {
-            {
 
-                {
-                    $firmaBeneficiario = base64_decode($this->beneficiario['url_firma_beneficiarios']);
-                    $firmaBeneficiario = str_replace("image/svg+xml,", '', $firmaBeneficiario);
-                    $firmaBeneficiario = str_replace('<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">', '', $firmaBeneficiario);
-                    $firmaBeneficiario = str_replace("svg", 'draw', $firmaBeneficiario);
-                }
-
-                {
-
-                    $firmacontratista = base64_decode($this->beneficiario['url_firma_contratista']);
-                    $firmacontratista = str_replace("image/svg+xml,", '', $firmacontratista);
-                    $firmacontratista = str_replace('<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">', '', $firmacontratista);
-                    $firmacontratista = str_replace("svg", 'draw', $firmacontratista);
-
-                }
-
-                $firmaBeneficiario = str_replace("height", 'height="40" pasos2', $firmaBeneficiario);
-                $firmaBeneficiario = str_replace("width", 'width="125" pasos1', $firmaBeneficiario);
-                $firmacontratista = str_replace("height", 'height="40" pasos2', $firmacontratista);
-                $firmacontratista = str_replace("width", 'width="125" pasos1', $firmacontratista);
-
-                $cadena = $_SERVER['HTTP_USER_AGENT'];
-                $resultado = stristr($cadena, "Android");
-
-                if ($resultado) {
-                    $firmacontratista = str_replace("<path", '<g viewBox="0 0 50 50" transform="scale(0.2,0.2)"><path', $firmacontratista);
-                    $firmacontratista = str_replace("/>", ' /></g>', $firmacontratista);
-                    $firmaBeneficiario = str_replace("<path", '<g viewBox="0 0 50 50" transform="scale(0.2,0.2)"><path', $firmaBeneficiario);
-                    $firmaBeneficiario = str_replace("/>", ' /></g>', $firmaBeneficiario);
-                } else {
-                    $firmacontratista = str_replace("<path", '<g viewBox="0 0 50 50" transform="scale(0.08,0.08)"><path', $firmacontratista);
-                    $firmacontratista = str_replace("/>", ' /></g>', $firmacontratista);
-                    $firmaBeneficiario = str_replace("<path", '<g viewBox="0 0 50 50" transform="scale(0.08,0.08)"><path', $firmaBeneficiario);
-                    $firmaBeneficiario = str_replace("/>", ' /></g>', $firmaBeneficiario);
-
-                }
-
-            }
-
-            ini_set('xdebug.var_display_max_depth', 20000);
-            ini_set('xdebug.var_display_max_children', 20000);
-            ini_set('xdebug.var_display_max_data', 20000);
-
-            $firma_beneficiario = $firmaBeneficiario;
-
-            $firma_contratista = $firmacontratista;
-            //var_dump($firma_beneficiario);
-            //var_dump($firma_contratista);exit;
-
-            //var_dump($_SERVER['HTTP_USER_AGENT']);EXIT;
-
-        }
-        {
-
-            $cadenaSql = $this->miSql->getCadenaSql('consultarParametroParticular', $this->beneficiario['medio_pago']);
-            $medioPago = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda")[0];
+            $cadenaSql = $this->miSql->getCadenaSql('consultarParametroParticular', $beneficiario['medio_pago']);
+            $medioPago = $this->esteRecursoDBPR->ejecutarAcceso($cadenaSql, "busqueda")[0];
 
             //var_dump($medioPago);
-            $cadenaSql = $this->miSql->getCadenaSql('consultarParametroParticular', $this->beneficiario['tipo_pago']);
-            $tipoPago = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda")[0];
+            $cadenaSql = $this->miSql->getCadenaSql('consultarParametroParticular', $beneficiario['tipo_pago']);
+            $tipoPago = $this->esteRecursoDBPR->ejecutarAcceso($cadenaSql, "busqueda")[0];
             //var_dump($tipoPago);exit;
 
             $medio_virtual = ($medioPago['descripcion'] == 'Virtual') ? "X" : " ";
@@ -305,7 +241,7 @@ class GenerarDocumento {
                                     <table  style='width:100%;' >
                                         <tr>
                                                <td align='center' style='width:30%;border=none;' >
-                                                <img src='" . $this->rutaURL . "frontera/css/imagen/vivedigital.png'  width='125' height='40'>
+                                                <img src='http://192.168.0.7/OpenKyOS/blocks/gestionBeneficiarios///generacionContrato/frontera/css/imagen/vivedigital.png'  width='125' height='40'>
                                                 </td>
                                                <td align='center' style='width:70%;border=none;' >
                                                 <font size='40px'><b>CONTRATO DE PRESTACIÓN DE SERVICIOS DE COMUNICACIONES</b></font>
@@ -351,7 +287,7 @@ class GenerarDocumento {
                                 <table style='width:100%;'>
                                         <tr>
                                             <td style='width:50%;text-align=center;'>N° Contrato</td>
-                                            <td style='width:50%;text-align=center;'>" . $this->beneficiario['numero_contrato'] . "</td>
+                                            <td style='width:50%;text-align=center;'>" . $beneficiario['numero_contrato'] . "</td>
                                         </tr>
                                     </table>
                              </td>
@@ -365,30 +301,30 @@ class GenerarDocumento {
                         <tr>
                             <td rowspan='6' style='width:15%;text-align=center;'><b>DATOS ABONADO SUSCRIPTOR</b></td>
                             <td style='width:15%;text-align=center;'><b>Nombres</b></td>
-                            <td style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['nombres'] . "</td>
+                            <td style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['nombres'] . "</td>
                             <td style='width:10%;text-align=center;'><b>Primer Apellido</b></td>
-                            <td style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['primer_apellido'] . "</td>
+                            <td style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['primer_apellido'] . "</td>
                             <td style='width:5%;text-align=center;'><b>Segundo Apellido</b></td>
-                            <td colspan='2' style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['segundo_apellido'] . "</td>
+                            <td colspan='2' style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['segundo_apellido'] . "</td>
                         </tr>
                         <tr>
                             <td style='width:15%;text-align=center;'><b>Tipo Documento</b></td>
                             <td style='width:5%;text-align=center;font-size:9px;'>CC " . $cedula . "</td>
                             <td style='width:5%;text-align=center;font-size:9px;'>TI " . $targeta . "</td>
                             <td style='width:10%;text-align=center;'><b>Número</b></td>
-                            <td style='width:15%;text-align=center;font-size:9px;'>" . $this->beneficiario['numero_identificacion'] . "</td>
+                            <td style='width:15%;text-align=center;font-size:9px;'>" . $beneficiario['numero_identificacion'] . "</td>
                             <td style='width:15%;text-align=center;'><b>Lugar/Fecha Expedición</b></td>
-                            <td style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['fecha_expedicion'] . "</td>
+                            <td style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['fecha_expedicion'] . "</td>
                         </tr>
                          <tr>
                             <td style='width:15%;text-align=center;'><b>Dirección Domicilio</b></td>
-                            <td colspan='6' style='width:70%;text-align=center;font-size:9px;'>" . $this->beneficiario['direccion_domicilio'] . " " . $anexo_dir . "</td>
+                            <td colspan='6' style='width:70%;text-align=center;font-size:9px;'>" . $beneficiario['direccion_domicilio'] . " " . $anexo_dir . "</td>
                         </tr>
                        <tr>
                             <td style='width:15%;text-align=center;'><b>Departamento</b></td>
-                            <td colspan='1'style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['nombre_departamento'] . "</td>
+                            <td colspan='1'style='width:10%;text-align=center;font-size:9px;'>CORDOBA</td>
                             <td style='width:10%;text-align=center;'><b>Municipio</b></td>
-                            <td colspan='1' style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['nombre_municipio'] . "</td>
+                            <td colspan='1' style='width:10%;text-align=center;font-size:9px;'>CERETÉ</td>
                            <td colspan='1'style='width:5%;text-align=center;'><b>Urbanización</b></td>
                             <td colspan='2'style='width:20%;text-align=center;font-size:9px;'>" . $urbanizacion['nombre'] . "</td>
                         </tr>
@@ -398,15 +334,15 @@ class GenerarDocumento {
                             <td style='width:5%;text-align=center;font-size:9px;'>1 Residencial</td>
                             <td style='width:5%;text-align=center;font-size:9px;'>2 Residencial</td>
                            <td colspan='1'style='width:5%;text-align=center;'><b>Barrio</b></td>
-                            <td colspan='2'style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['barrio'] . " </td>
+                            <td colspan='2'style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['barrio'] . " </td>
                         </tr>
                          <tr>
                             <td style='width:15%;text-align=center;'><b>Telefono</b></td>
-                             <td colspan='1' style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['telefono'] . "</td>
+                             <td colspan='1' style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['telefono'] . "</td>
                             <td style='width:10%;text-align=center;'><b>Celular</b></td>
-                            <td style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['celular'] . "</td>
+                            <td style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['celular'] . "</td>
                              <td colspan='1' style='width:5%;text-align=center;'><b>Correo Electrónico</b></td>
-                            <td colspan='2'style='width:10%;text-align=center;font-size:9px;'>" . $this->beneficiario['correo'] . "</td>
+                            <td colspan='2'style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['correo'] . "</td>
                         </tr>
                     </table>
                     <br>
@@ -414,15 +350,15 @@ class GenerarDocumento {
                         <tr>
                             <td rowspan='2' style='width:15%;text-align=center;'><b>DATOS SERVICIO</b></td>
                             <td style='width:30%;text-align=center;'><b>Velocidad Internet</b></td>
-                            <td style='width:15%;text-align=right;font-size:9px;'>" . $this->beneficiario['velocidad_internet'] . " MB</td>
+                            <td style='width:15%;text-align=right;font-size:9px;'>" . $beneficiario['velocidad_internet'] . " MB</td>
                             <td style='width:20%;text-align=center;'><b>Vigencia Servicio</b></td>
                             <td style='width:20%;text-align=center;font-size:9px;'><b>15 Meses</b></td>
                         </tr>
                         <tr>
                             <td style='width:30%;text-align=center;'><b>Valor Mensual Servicio Básico </b></td>
-                            <td style='width:15%;text-align=center;font-size:9px;'><b>$ " . $this->beneficiario['valor_tarificacion'] . "</b></td>
+                            <td style='width:15%;text-align=center;font-size:9px;'><b>$ " . $beneficiario['valor_tarificacion'] . "</b></td>
                             <td style='width:20%;text-align=center;'><b>Valor Total</b></td>
-                            <td style='width:20%;text-align=center;font-size:9px;'><b>$ " . $this->beneficiario['valor_tarificacion'] * 15 . "</b></td>
+                            <td style='width:20%;text-align=center;font-size:9px;'><b>$ " . $beneficiario['valor_tarificacion'] * 15 . "</b></td>
                         </tr>
                      </table>
                      <br>
@@ -441,7 +377,7 @@ class GenerarDocumento {
                         </tr>
                         <tr>
                             <td style='width:35%;text-align=center;'><b>TOTAL A PAGAR FACTURA MENSUAL</b></td>
-                            <td  colspan='3' style='width:50%;text-align=center;font-size:9px;'><b>$ " . $this->beneficiario['valor_tarificacion'] . "</b></td>
+                            <td  colspan='3' style='width:50%;text-align=center;font-size:9px;'><b>$ " . $beneficiario['valor_tarificacion'] . "</b></td>
                         </tr>
                         </table>
                      <br>
@@ -547,17 +483,17 @@ class GenerarDocumento {
                      <table style='width:100%;border:none'>
                     <tr>
                     <td style='width:25%;text-align:left;border:none'>FIRMA :</td>
-                    <td style='width:25%;text-align:left;border:none'>" . $firma_beneficiario . "</td>
+                    <td style='width:25%;text-align:left;border:none'>_________________________</td>
                     <td style='width:50%;text-align:center;border:none'> </td>
                     </tr>
                     <tr>
                     <td style='width:25%;text-align:left;border:none'>Nombre Suscriptor:</td>
-                    <td style='width:25%;text-align:left;border:none'>" . $this->beneficiario['nombres'] . " " . $this->beneficiario['primer_apellido'] . " " . $this->beneficiario['segundo_apellido'] . "</td>
+                    <td style='width:25%;text-align:left;border:none'>" . $beneficiario['nombres'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "</td>
                     <td style='width:50%;text-align:center;border:none'> </td>
                     </tr>
                     <tr>
                     <td style='width:25%;text-align:left;border:none'>C.C :</td>
-                    <td style='width:25%;text-align:left;border:none'>" . $this->beneficiario['numero_identificacion'] . "</td>
+                    <td style='width:25%;text-align:left;border:none'>" . $beneficiario['numero_identificacion'] . "</td>
                     <td style='width:50%;text-align:center;border:none'> </td>
                     </tr>
                     </table>
@@ -574,24 +510,10 @@ class GenerarDocumento {
                             <td text-align=center;' style='width:100%;'><b>OBSERVACIONES DEL OPERADOR</b></td>
                         </tr>
                         <tr>
-                            <td style='width:100%;'>Nombre Asesor:&nbsp;&nbsp;" . $comisionador . "<br><br><br></td>
+                            <td style='width:100%;'>Nombre Asesor:&nbsp;&nbsp;<br><br><br></td>
                         </tr>
         </table>
         </nobreak>";
-
-            if ($this->beneficiario['soporte'] != '') {
-
-                $contenidoPagina .= "<br> <div style='page-break-after:always; clear:both'></div>
-                                         <P style='text-align:center'><b>Soporte</b></P><br><br>";
-                $contenidoPagina .= "<table style='text-align:center;width:100%;border:none'>
-                                            <tr>
-                                                <td style='text-align:center;border:none;width:100%'>
-                                                    <img src='" . $this->beneficiario['soporte'] . "'  width='500' height='500'>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                     ";
-            }
 
             $contenidoPagina .= "</page>";
 

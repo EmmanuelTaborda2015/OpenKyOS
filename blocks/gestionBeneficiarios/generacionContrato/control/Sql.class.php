@@ -605,6 +605,14 @@ class Sql extends \Sql {
                 $cadenaSql .= " WHERE estado_registro='TRUE'";
                 $cadenaSql .= " AND id_parametro='" . $variable . "';";
                 break;
+
+            case 'ConsultaProduccionBeneficiarios':
+                $cadenaSql = " SELECT *";
+                $cadenaSql .= " FROM interoperacion.contrato";
+                $cadenaSql .= " WHERE numero_contrato > 30";
+                $cadenaSql .= " AND numero_contrato<= 500 ;";
+                break;
+
         }
 
         return $cadenaSql;
