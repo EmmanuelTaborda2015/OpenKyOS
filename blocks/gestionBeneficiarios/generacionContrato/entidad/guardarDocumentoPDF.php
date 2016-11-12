@@ -299,17 +299,17 @@ class GenerarDocumento {
                     </table>
                     <br>
                     <P style='text-align:justify;font-size:10px'>
-   Entre LA CORPORACIÓN POLITÉCNICA NACIONAL DE COLOMBIA, en adelante POLITÉCNICA, entidad sin ánimo de lucro, domiciliada en la ciudad de Bogotá D.C., por una parte, y por la otra, la persona identificada como USUARIO, cuyos datos son los registrados a continuación, quien ha leído y aceptado en todos sus términos el presente documento y sus respectivos anexos, hemos convenido celebrar el presente CONTRATO DE SERVICIOS DE COMUNICACIONES, con el objeto de establecer las condiciones técnicas, jurídicas y económicas que regirán la prestación al USUARIO de servicios de comunicaciones, específicamente Internet fijo, en condiciones de calidad y eficiencia, a cambio de un precio en dinero, el cual se regirá por lo dispuesto en el Anexo Técnico del Contrato de Aporte N° 681 de 2016 y al documento de recomendaciones de la CRC \"CONEXIONES DIGITALES Esquema para la implementación de subsidios e Incentivos para el acceso a Internet de Última milla\", la ley 1341/09, Resolución 3066/11 de la CRC, la regulación y reglamentación que expidan la CRC, el Min TIC y la SuperIndustria y Comercio, según su competencia, condiciones y anexos del presente contrato, en el marco del Contrato de Aporte N° 681 de 2015, y en las normas que la modifiquen o deroguen.  EL USUARIO, al iniciar el (los) procedimiento (s) de suscripción para el (los) plan (es) del Servicio de comunicaciones en la modalidad postpago y prepago, según aplique, (en lo sucesivo el Servicio) a través del medio que POLITÉCNICA ponga a disposición del USUARIO; y al suministrar sus datos personales, se entiende que acuerda suscribirse a uno de los planes ofrecidos por POLITÉCNICA del Servicio y expresa su entera e incondicional aceptación, a los términos y condiciones contenidos en el presente contrato y en los anexos que lo integran (en lo sucesivo denominado, el Contrato) para disponer el Servicio.
+  Entre LA CORPORACIÓN POLITÉCNICA NACIONAL DE COLOMBIA, en adelante POLITÉCNICA, entidad sin ánimo de lucro, domiciliada en la ciudad de Bogotá D.C, por una parte, y por la otra, la persona identificada como USUARIO, cuyos datos son los registrados a continuación, quien ha leído y aceptado en todos sus términos el presente documento y sus respectivos anexos, hemos convenido celebrar el presente CONTRATO DE SERVICIOS DE COMUNICACIONES, con el objeto de establecer las condiciones técnicas, jurídicas y económicas que regirán la prestación al USUARIO de servicios de Internet fijo, en condiciones de calidad y eficiencia, el cual se regirá por lo dispuesto en el Anexo Técnico del Contrato de Aporte N° 681 de 2015 y al documento de recomendaciones de la CRC “CONEXIONES DIGITALES Esquema para la implementación de subsidios e Incentivos para el acceso a Internet de Última milla”, la ley 1341/09, Resolución 3066/11 de la CRC, la regulación y reglamentación que expidan la CRC, el Min TIC y la SuperIndustria y Comercio, según su competencia, condiciones y anexos del presente contrato, en el marco del Contrato de Aporte N° 681 de 2015. y en las normas que la modifiquen o deroguen.
                     </P>
                     <table style='width:100%;'>
                         <tr>
-                            <td rowspan='9' style='width:15%;text-align=center;'><b>DATOS ABONADO SUSCRIPTOR</b></td>
+                            <td rowspan='9' style='width:15%;text-align=center;'><b>DATOS USUARIO</b></td>
                             <td style='width:15%;text-align=center;'><b>Nombres</b></td>
                             <td colspan='3' style='width:70%;text-align=center;'><b>" . $beneficiario['nombres'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "</b></td>
                         </tr>
                         <tr>
                             <td style='width:15%;text-align=center;'><b>Número Identificación</b></td>
-                            <td colspan='3' style='width:15%;text-align=center;'><b>" . $beneficiario['numero_identificacion'] . "</b></td>
+                            <td colspan='3' style='width:15%;text-align=center;'><b>" . number_format($beneficiario['numero_identificacion'], 0, '', '.') . "</b></td>
                         </tr>
                         <tr>
                             <td style='width:15%;text-align=center;'><b>Dirección Domicilio</b></td>
@@ -349,7 +349,6 @@ class GenerarDocumento {
 
 
                     </table>
-                    <br>
                     <table style='width:100%;'>
                         <tr>
                             <td rowspan='2' style='width:15%;text-align=center;'><b>DATOS SERVICIO</b></td>
@@ -365,7 +364,6 @@ class GenerarDocumento {
                             <td style='width:20%;text-align=center;'><b>$ " . $beneficiario['valor_tarificacion'] * 15 . "</b></td>
                         </tr>
                      </table>
-                     <br>
                       <table style='width:100%;'>
                          <tr>
                             <td rowspan='3' style='width:15%;text-align=center;'><b>DATOS FACTURACIÓN</b></td>
@@ -384,13 +382,10 @@ class GenerarDocumento {
                             <td  colspan='3' style='width:50%;text-align=center;'><b>$ " . $beneficiario['valor_tarificacion'] . "</b></td>
                         </tr>
                         </table>
-                     <br>
-                     <br>
-                     <br>
-                     <br>
+
                     <table style='width:100%;'>
                         <tr>
-                            <td text-align=center;'><b>DECLARACIONES DEL SUSCRIPTOR</b></td>
+                            <td text-align=center;'><b>DECLARACIONES DEL USUARIO</b></td>
                         </tr>
                         <tr>
                             <td text-align=justify;font-size:9.5px'>
@@ -482,6 +477,12 @@ class GenerarDocumento {
         <br>
         <br>
         <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
 
 
  <table style='width:100%;border:none'>
@@ -490,18 +491,15 @@ class GenerarDocumento {
                      <table style='width:100%;border:none'>
                     <tr>
                     <td style='width:25%;text-align:left;border:none'>FIRMA :</td>
-                    <td style='width:25%;text-align:left;border:none'>_________________________</td>
-                    <td style='width:50%;text-align:center;border:none'> </td>
+                    <td style='width:75%;text-align:left;border:none'>_________________________</td>
                     </tr>
                     <tr>
-                    <td style='width:25%;text-align:left;border:none'>Nombre Suscriptor:</td>
-                    <td style='width:25%;text-align:left;border:none'>" . $beneficiario['nombres'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "</td>
-                    <td style='width:50%;text-align:center;border:none'> </td>
+                    <td style='width:25%;text-align:left;border:none'>Nombre Usuario:</td>
+                    <td style='width:75%;text-align:left;border:none'>" . $beneficiario['nombres'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "</td>
                     </tr>
                     <tr>
                     <td style='width:25%;text-align:left;border:none'>C.C :</td>
-                    <td style='width:25%;text-align:left;border:none'>" . $beneficiario['numero_identificacion'] . "</td>
-                    <td style='width:50%;text-align:center;border:none'> </td>
+                    <td style='width:75%;text-align:left;border:none'>" . number_format($beneficiario['numero_identificacion'], 0, '', '.') . "</td>
                     </tr>
                     </table>
                 </td>
@@ -512,14 +510,6 @@ class GenerarDocumento {
         <br>
         <br>
         <br>
-        <table style='width:100%;border:none'>
-                        <tr>
-                            <td text-align=center;' style='width:100%;'><b>OBSERVACIONES DEL OPERADOR</b></td>
-                        </tr>
-                        <tr>
-                            <td style='width:100%;'><br><br><br></td>
-                        </tr>
-        </table>
         </nobreak>";
 
             $contenidoPagina .= "</page>";
