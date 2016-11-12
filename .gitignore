@@ -1,0 +1,6 @@
+
+archivos/*
+blocks/gestionComisionamiento/generacionActas/entidad/directorio_actas/*
+blocks/gestionBeneficiarios/generacionContrato/entidad/firmas/*
+blocks/gestionBeneficiarios/generacionContrato/entidad/firmas/informacion_directorio
+blocks/reportes/certificadoNoInternet/entidad/firmas/*
