@@ -66,6 +66,7 @@ class GenerarDocumento {
         /**
          *  2. Información de Beneficiario
          **/
+        //var_dump($_REQUEST);
 
         $this->obtenerInformacionBeneficiario();
 
@@ -83,6 +84,7 @@ class GenerarDocumento {
             $this->rutaAbsoluta .= '/archivos/contratos/';
             $this->asosicarCodigoDocumento($value['id_beneficiario']);
             $this->crearPDF();
+            exit;
             $arreglo = array(
                 'nombre_contrato' => $this->nombreContrato,
                 'ruta_contrato' => $this->rutaURL . $this->nombreContrato);
@@ -128,7 +130,7 @@ class GenerarDocumento {
         ));
         $html2pdf->pdf->SetDisplayMode('fullpage');
         $html2pdf->WriteHTML($this->contenidoPagina);
-        $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'F');
+        $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'D');
 
     }
     public function estruturaDocumento($beneficiario) {
@@ -197,6 +199,7 @@ class GenerarDocumento {
             $comisionador = (isset($this->info_usuario['uid'][1])) ? $this->info_usuario['uid'][1] : " ";
 
         }
+        $telefono = ($beneficiario['telefono'] != '0') ? $beneficiario['telefono'] : " ";
 
         {
 
@@ -240,27 +243,32 @@ class GenerarDocumento {
                             <br>
                                     <table  style='width:100%;' >
                                         <tr>
-                                               <td align='center' style='width:30%;border=none;' >
-                                                <img src='http://192.168.0.7/OpenKyOS/blocks/gestionBeneficiarios///generacionContrato/frontera/css/imagen/vivedigital.png'  width='125' height='40'>
+                                                <td align='center' style='width:100%;border=none;' >
+                                                <img src='http://192.168.0.7/OpenKyOS/blocks/gestionBeneficiarios///generacionContrato/frontera/css/imagen/logos_contrato.png'  width='500' height='35'>
                                                 </td>
-                                               <td align='center' style='width:70%;border=none;' >
-                                                <font size='40px'><b>CONTRATO DE PRESTACIÓN DE SERVICIOS DE COMUNICACIONES</b></font>
-
-                                            </td>
+                                                <tr>
+                                                <td style='width:100%;border:none;text-align:center;font-size:9px;'>><b>CONTRATO DE APORTE N° 0681 DE 2015<br>CORPORACIÓN POLITÉCNICA NACIONAL DE COLOMBIA</b></td>
+                                                </tr>
+                                                <tr>
+                                                <td style='width:100%;border:none;text-align:center;font-size:9px;'><br><br><br><b>CONTRATO DE APORTE N° 0681 DE 2015<br>CORPORACIÓN POLITÉCNICA NACIONAL DE COLOMBIA</b></td>
+                                                </tr>
+                                                <tr>
+                                                <td style='width:100%;border:none;text-align:center;font-size:9px;'><b>PROYECTO CONEXIONES DIGITALES II</b></td>
+                                                </tr>
                                         </tr>
                                     </table>
 
                         </page_header>";
 
             $contenidoPagina .= "
-
+<br>
+<br>
     <table style='width:100%;'>
                         <tr>
-                            <td style='width:35%;text-align=center;border:none'> </td>
-                            <td style='width:30%;text-align=center;border:none'>
+                            <td style='width:100%;text-align=center;border:none'>
                                     <table style='width:100%;'>
                                         <tr>
-                                            <td style='width:100%;border:none;text-align:center'><b>COMPRAVENTA DE SERVICIOS</b></td>
+                                            <td style='width:100%;border:none;text-align:center'><b>CONTRATO DE PRESTACIÓN DE SERVICIOS DE COMUNICACIONES</b></td>
                                         </tr>
                                     </table>
                             </td>
@@ -299,66 +307,66 @@ class GenerarDocumento {
                     </P>
                     <table style='width:100%;'>
                         <tr>
-                            <td rowspan='6' style='width:15%;text-align=center;'><b>DATOS ABONADO SUSCRIPTOR</b></td>
+                            <td rowspan='9' style='width:15%;text-align=center;'><b>DATOS ABONADO SUSCRIPTOR</b></td>
                             <td style='width:15%;text-align=center;'><b>Nombres</b></td>
-                            <td style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['nombres'] . "</td>
-                            <td style='width:10%;text-align=center;'><b>Primer Apellido</b></td>
-                            <td style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['primer_apellido'] . "</td>
-                            <td style='width:5%;text-align=center;'><b>Segundo Apellido</b></td>
-                            <td colspan='2' style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['segundo_apellido'] . "</td>
+                            <td colspan='3' style='width:70%;text-align=center;'><b>" . $beneficiario['nombres'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "</b></td>
                         </tr>
                         <tr>
-                            <td style='width:15%;text-align=center;'><b>Tipo Documento</b></td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>CC " . $cedula . "</td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>TI " . $targeta . "</td>
-                            <td style='width:10%;text-align=center;'><b>Número</b></td>
-                            <td style='width:15%;text-align=center;font-size:9px;'>" . $beneficiario['numero_identificacion'] . "</td>
-                            <td style='width:15%;text-align=center;'><b>Lugar/Fecha Expedición</b></td>
-                            <td style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['fecha_expedicion'] . "</td>
+                            <td style='width:15%;text-align=center;'><b>Número Identificación</b></td>
+                            <td colspan='3' style='width:15%;text-align=center;'><b>" . $beneficiario['numero_identificacion'] . "</b></td>
+                        </tr>
+                        <tr>
+                            <td style='width:15%;text-align=center;'><b>Dirección Domicilio</b></td>
+                            <td colspan='3' style='width:70%;text-align=center;'>" . $beneficiario['direccion_domicilio'] . " " . $anexo_dir . "</td>
                         </tr>
                          <tr>
-                            <td style='width:15%;text-align=center;'><b>Dirección Domicilio</b></td>
-                            <td colspan='6' style='width:70%;text-align=center;font-size:9px;'>" . $beneficiario['direccion_domicilio'] . " " . $anexo_dir . "</td>
-                        </tr>
-                       <tr>
                             <td style='width:15%;text-align=center;'><b>Departamento</b></td>
-                            <td colspan='1'style='width:10%;text-align=center;font-size:9px;'>CORDOBA</td>
+                            <td style='width:10%;text-align=center;'>CORDOBA</td>
                             <td style='width:10%;text-align=center;'><b>Municipio</b></td>
-                            <td colspan='1' style='width:10%;text-align=center;font-size:9px;'>CERETÉ</td>
-                           <td colspan='1'style='width:5%;text-align=center;'><b>Urbanización</b></td>
-                            <td colspan='2'style='width:20%;text-align=center;font-size:9px;'>" . $urbanizacion['nombre'] . "</td>
+                            <td style='width:10%;text-align=center;'>CERETÉ</td>
+                         </tr>
+                         <tr>
+                            <td style='width:15%;text-align=center;'><b>Urbanización</b></td>
+                            <td colspan='3'style='width:70%;text-align=center;'>" . $urbanizacion['nombre'] . "</td>
                         </tr>
                         <tr>
                             <td style='width:15%;text-align=center;'><b>Estrato</b></td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>VIP</td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>1 Residencial</td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>2 Residencial</td>
-                           <td colspan='1'style='width:5%;text-align=center;'><b>Barrio</b></td>
-                            <td colspan='2'style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['barrio'] . " </td>
+                            <td style='text-align=center;'>VIP(<b>X</b>)</td>
+                            <td style='text-align=center;'>1 Residencial</td>
+                            <td style='text-align=center;'>2 Residencial</td>
+                        </tr>
+                        <tr>
+                           <td style='width:15%;text-align=center;'><b>Barrio</b></td>
+                           <td colspan='3'style='width:70%;text-align=center;'>" . $beneficiario['barrio'] . " </td>
                         </tr>
                          <tr>
                             <td style='width:15%;text-align=center;'><b>Telefono</b></td>
-                             <td colspan='1' style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['telefono'] . "</td>
+                            <td style='width:10%;text-align=center;'>" . $telefono . "</td>
                             <td style='width:10%;text-align=center;'><b>Celular</b></td>
-                            <td style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['celular'] . "</td>
-                             <td colspan='1' style='width:5%;text-align=center;'><b>Correo Electrónico</b></td>
-                            <td colspan='2'style='width:10%;text-align=center;font-size:9px;'>" . $beneficiario['correo'] . "</td>
+                            <td style='width:10%;text-align=center;'>" . $beneficiario['celular'] . "</td>
                         </tr>
+                        <tr>
+                            <td style='width:15%;text-align=center;'><b>Correo Electrónico</b></td>
+                            <td colspan='3'style='width:70%;text-align=center;'>" . $beneficiario['correo'] . "</td>
+                        </tr>
+
+
+
                     </table>
                     <br>
                     <table style='width:100%;'>
                         <tr>
                             <td rowspan='2' style='width:15%;text-align=center;'><b>DATOS SERVICIO</b></td>
                             <td style='width:30%;text-align=center;'><b>Velocidad Internet</b></td>
-                            <td style='width:15%;text-align=right;font-size:9px;'>" . $beneficiario['velocidad_internet'] . " MB</td>
+                            <td style='width:15%;text-align=right;'>" . $beneficiario['velocidad_internet'] . " MB</td>
                             <td style='width:20%;text-align=center;'><b>Vigencia Servicio</b></td>
-                            <td style='width:20%;text-align=center;font-size:9px;'><b>15 Meses</b></td>
+                            <td style='width:20%;text-align=center;'><b>15 Meses</b></td>
                         </tr>
                         <tr>
                             <td style='width:30%;text-align=center;'><b>Valor Mensual Servicio Básico </b></td>
-                            <td style='width:15%;text-align=center;font-size:9px;'><b>$ " . $beneficiario['valor_tarificacion'] . "</b></td>
+                            <td style='width:15%;text-align=center;'><b>$ " . $beneficiario['valor_tarificacion'] . "</b></td>
                             <td style='width:20%;text-align=center;'><b>Valor Total</b></td>
-                            <td style='width:20%;text-align=center;font-size:9px;'><b>$ " . $beneficiario['valor_tarificacion'] * 15 . "</b></td>
+                            <td style='width:20%;text-align=center;'><b>$ " . $beneficiario['valor_tarificacion'] * 15 . "</b></td>
                         </tr>
                      </table>
                      <br>
@@ -366,18 +374,18 @@ class GenerarDocumento {
                          <tr>
                             <td rowspan='3' style='width:15%;text-align=center;'><b>DATOS FACTURACIÓN</b></td>
                             <td style='width:35%;text-align=center;'><b>Forma de Pago</b></td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>Prepago (<b>" . $tipo_prepago . "</b>)</td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>Postpago (<b>" . $tipo_pospago . "</b>)</td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>Anticipado (<b>" . $tipo_anticipado . "</b>)</td>
+                            <td style='width:5%;text-align=center;'>Prepago (<b>" . $tipo_prepago . "</b>)</td>
+                            <td style='width:5%;text-align=center;'>Postpago (<b>" . $tipo_pospago . "</b>)</td>
+                            <td style='width:5%;text-align=center;'>Anticipado (<b>" . $tipo_anticipado . "</b>)</td>
                         </tr>
                         <tr>
                             <td style='width:35%;text-align=center;'><b>Mecanismos de Pago</b></td>
-                            <td style='width:5%;text-align=center;font-size:9px;'>Virtual (<b>" . $medio_virtual . "</b>)</td>
-                            <td  colspan='2'  style='width:5%;text-align=center;font-size:9px;'>Efectivo (<b>" . $medio_efectivo . "</b>)</td>
+                            <td style='width:5%;text-align=center;'>Virtual (<b>" . $medio_virtual . "</b>)</td>
+                            <td  colspan='2'  style='width:5%;text-align=center;'>Efectivo (<b>" . $medio_efectivo . "</b>)</td>
                         </tr>
                         <tr>
                             <td style='width:35%;text-align=center;'><b>TOTAL A PAGAR FACTURA MENSUAL</b></td>
-                            <td  colspan='3' style='width:50%;text-align=center;font-size:9px;'><b>$ " . $beneficiario['valor_tarificacion'] . "</b></td>
+                            <td  colspan='3' style='width:50%;text-align=center;'><b>$ " . $beneficiario['valor_tarificacion'] . "</b></td>
                         </tr>
                         </table>
                      <br>
@@ -418,6 +426,9 @@ class GenerarDocumento {
                         </tr>
                     </table>
                     <nobreak>
+                    <br>
+                    <br>
+                    <br>
                     <table>
                         <tr>
                             <td text-align=center;'><b>RÉGIMEN DE OBLIGACIONES DEL USUARIO EN RELACIÓN CON LOS SERVICIOS PRESTADOS</b></td>
@@ -510,7 +521,7 @@ class GenerarDocumento {
                             <td text-align=center;' style='width:100%;'><b>OBSERVACIONES DEL OPERADOR</b></td>
                         </tr>
                         <tr>
-                            <td style='width:100%;'>Nombre Asesor:&nbsp;&nbsp;<br><br><br></td>
+                            <td style='width:100%;'><br><br><br></td>
                         </tr>
         </table>
         </nobreak>";
