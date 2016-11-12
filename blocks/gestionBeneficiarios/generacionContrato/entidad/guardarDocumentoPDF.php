@@ -82,7 +82,7 @@ class GenerarDocumento {
             $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
             $this->rutaURL .= '/archivos/contratos/';
             $this->rutaAbsoluta .= '/archivos/contratos/';
-            $this->asosicarCodigoDocumento($value['id_beneficiario']);
+            $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
             exit;
             $arreglo = array(
@@ -104,12 +104,8 @@ class GenerarDocumento {
     public function asosicarCodigoDocumento($beneficiario) {
 
         $this->prefijo = substr(md5(uniqid(time())), 0, 6);
-        $cadenaSql = $this->miSql->getCadenaSql('consultarParametroContrato', '128');
-        $id_parametro = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda")[0];
-        $tipo_documento = $id_parametro['id_parametro'];
-        $descripcion_documento = $id_parametro['id_parametro'] . '_' . $id_parametro['descripcion'];
-        $nombre_archivo = str_replace(" ", "_", $descripcion_documento);
-        $this->nombreContrato = $beneficiario . "_" . $nombre_archivo . "_" . $this->prefijo . '.pdf';
+
+        $this->nombreContrato = $beneficiario['numero_identificacion'] . "_" . $beneficiario['nombres'] . "_" . $beneficiario['primer_apellido'] . "_" . $beneficiario['segundo_apellido'] . "_" . $this->prefijo . '.pdf';
 
     }
 
