@@ -66,7 +66,7 @@ class GenerarDocumento {
         /**
          *  2. Información de Beneficiario
          **/
-        //var_dump($_REQUEST);
+        var_dump($_REQUEST);exit;
         $this->obtenerInformacionBeneficiario();
 
         foreach ($this->beneficiario as $key => $value) {
@@ -83,7 +83,7 @@ class GenerarDocumento {
             $this->rutaAbsoluta .= '/archivos/contratos/';
             $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
-            exit;
+
             $arreglo = array(
                 'nombre_contrato' => $this->nombreContrato,
                 'ruta_contrato' => $this->rutaURL . $this->nombreContrato);
@@ -125,7 +125,7 @@ class GenerarDocumento {
         ));
         $html2pdf->pdf->SetDisplayMode('fullpage');
         $html2pdf->WriteHTML($this->contenidoPagina);
-        $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'D');
+        $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'F');
 
     }
     public function estruturaDocumento($beneficiario) {
@@ -403,8 +403,8 @@ class GenerarDocumento {
                         </tr>
                         <tr>
                             <td text-align=justify;font-size:9.5px'>
-                         De acuerdo con los lineamientos del Anexo Técnico del Contrato de Aporte N° 681 de 2015, con la firma del presente contrato, POLITÉCNICA entregará al USUARIO un equipo de cómputo a título de comodato (uso y goce), una vez inicie la prestación del servicio y por el tiempo que dure el mismo. Finalizado el contrato, POLITÉCNICA entregará al USUARIO el equipo de cómputo en propiedad, siempre y cuando se haya prestado el servicio durante la totalidad de los meses pactados contractualmente. No obstante lo anterior, si el USUARIO cancela, suspende o se retira del contrato de manera anticipada, procederá a aplicarse lo contemplado en la cláusula VIGÉSIMO TERCERA. CAUSALES DE TERMINACIÓN DEL CONTRATO, del Anexo <b>CONDICIONES GENERALES DE SERVICIO DE COMUNICACIONES CONEXIONES DIGITALES II</b>, en lo atinente al procedimiento de restitución del equipo por parte del USUARIO a POLITÉCNICA
-                            </td>
+    De acuerdo con los lineamientos del Anexo Técnico del Contrato de Aporte N° 681 de 2015, junto con el servicio POLITÉCNICA entregará al USUARIO un equipo de cómputo a título de comodato (uso y goce). Finalizado el contrato, se transferirá el derecho de propiedad del equipo dado en comodato al USUARIO, siempre y cuando se haya cancelado el valor total del servicio y que dicho servicio se haya utilizado durante los 15 meses pactados en el presente contrato. No obstante lo anterior, si el USUARIO cancela, suspende o se retira del  contrato de manera anticipada, procederá a aplicarse lo contemplado en la cláusula VIGÉSIMO TERCERA. CAUSALES DE TERMINACIÓN DEL CONTRATO, del Anexo <b>CONDICIONES GENERALES DE SERVICIO DE COMUNICACIONES CONEXIONES DIGITALES II</b>, en lo atinente al procedimiento de restitución del equipo por parte del USUARIO al patrimonio autónomo P.A. Politécnica 8965 propietario del equipo.
+                       </td>
                         </tr>
                         <tr>
                             <td text-align=center;'><b>DISPONIBILIDAD DE LA INFORMACIÓN E INCORPORACIÓN DE ANEXOS</b></td>
