@@ -66,7 +66,7 @@ class GenerarDocumento {
         /**
          *  2. Información de Beneficiario
          **/
-
+        //var_dump($_REQUEST);
         $this->obtenerInformacionBeneficiario();
 
         foreach ($this->beneficiario as $key => $value) {
@@ -83,7 +83,7 @@ class GenerarDocumento {
             $this->rutaAbsoluta .= '/archivos/contratos/';
             $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
-
+            exit;
             $arreglo = array(
                 'nombre_contrato' => $this->nombreContrato,
                 'ruta_contrato' => $this->rutaURL . $this->nombreContrato);
@@ -125,7 +125,7 @@ class GenerarDocumento {
         ));
         $html2pdf->pdf->SetDisplayMode('fullpage');
         $html2pdf->WriteHTML($this->contenidoPagina);
-        $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'F');
+        $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'D');
 
     }
     public function estruturaDocumento($beneficiario) {
@@ -399,6 +399,14 @@ class GenerarDocumento {
                             </td>
                         </tr>
                         <tr>
+                            <td text-align=center;'><b>ENTREGA DEL EQUIPO DE CÓMPUTO</b></td>
+                        </tr>
+                        <tr>
+                            <td text-align=justify;font-size:9.5px'>
+                         De acuerdo con los lineamientos del Anexo Técnico del Contrato de Aporte N° 681 de 2015, con la firma del presente contrato, POLITÉCNICA entregará al USUARIO un equipo de cómputo a título de comodato (uso y goce), una vez inicie la prestación del servicio y por el tiempo que dure el mismo. Finalizado el contrato, POLITÉCNICA entregará al USUARIO el equipo de cómputo en propiedad, siempre y cuando se haya prestado el servicio durante la totalidad de los meses pactados contractualmente. No obstante lo anterior, si el USUARIO cancela, suspende o se retira del contrato de manera anticipada, procederá a aplicarse lo contemplado en la cláusula VIGÉSIMO TERCERA. CAUSALES DE TERMINACIÓN DEL CONTRATO, del Anexo <b>CONDICIONES GENERALES DE SERVICIO DE COMUNICACIONES CONEXIONES DIGITALES II</b>, en lo atinente al procedimiento de restitución del equipo por parte del USUARIO a POLITÉCNICA
+                            </td>
+                        </tr>
+                        <tr>
                             <td text-align=center;'><b>DISPONIBILIDAD DE LA INFORMACIÓN E INCORPORACIÓN DE ANEXOS</b></td>
                         </tr>
                         <tr>
@@ -514,7 +522,7 @@ class GenerarDocumento {
             $contenidoPagina .= "</page>";
 
         }
-
+        //echo $contenidoPagina;exit;
         $this->contenidoPagina = $contenidoPagina;
 
     }
