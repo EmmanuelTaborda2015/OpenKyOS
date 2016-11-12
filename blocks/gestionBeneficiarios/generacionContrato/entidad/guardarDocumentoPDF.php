@@ -66,7 +66,6 @@ class GenerarDocumento {
         /**
          *  2. Información de Beneficiario
          **/
-        //var_dump($_REQUEST);
 
         $this->obtenerInformacionBeneficiario();
 
@@ -84,7 +83,7 @@ class GenerarDocumento {
             $this->rutaAbsoluta .= '/archivos/contratos/';
             $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
-            exit;
+
             $arreglo = array(
                 'nombre_contrato' => $this->nombreContrato,
                 'ruta_contrato' => $this->rutaURL . $this->nombreContrato);
@@ -126,7 +125,7 @@ class GenerarDocumento {
         ));
         $html2pdf->pdf->SetDisplayMode('fullpage');
         $html2pdf->WriteHTML($this->contenidoPagina);
-        $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'D');
+        $html2pdf->Output($this->rutaAbsoluta . $this->nombreContrato, 'F');
 
     }
     public function estruturaDocumento($beneficiario) {
