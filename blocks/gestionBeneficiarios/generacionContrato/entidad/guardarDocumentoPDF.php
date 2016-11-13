@@ -79,8 +79,8 @@ class GenerarDocumento {
 
             $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
             $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
-            $this->rutaURL .= '/archivos/contratos/';
-            $this->rutaAbsoluta .= '/archivos/contratos/';
+            $this->rutaURL .= '/archivos/contratos/contratosCNDll';
+            $this->rutaAbsoluta .= '/archivos/contratos/contratosCNDll/';
             $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
 
@@ -322,7 +322,7 @@ class GenerarDocumento {
                          </tr>
                          <tr>
                             <td style='width:15%;text-align=center;'><b>Urbanización</b></td>
-                            <td colspan='3'style='width:70%;text-align=center;'>" . $urbanizacion['nombre'] . "</td>
+                            <td colspan='3'style='width:70%;text-align=center;'>Altos de las Acacias</td>
                         </tr>
                         <tr>
                             <td style='width:15%;text-align=center;'><b>Estrato</b></td>
