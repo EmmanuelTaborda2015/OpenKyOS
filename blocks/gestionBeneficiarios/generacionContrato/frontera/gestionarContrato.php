@@ -176,22 +176,8 @@ class GestionarContrato {
                     echo $this->miFormulario->campoTexto($atributos);
                     unset($atributos);
 
-                    if (isset($requisitosFaltantesObligatorios) && $requisitosFaltantesObligatorios && $infoContrato != NULL) {
-
-                        $_REQUEST['mensaje'] = 'requisitosFaltantes';
-                        $this->mensaje();
-
-                    } elseif (is_null($infoContrato)) {
-
-                        $_REQUEST['mensaje'] = 'minimoRequisitos';
-                        $this->mensaje();
-
-                    } else {
-
-                        $_REQUEST['mensaje'] = 'requisitosCompletos';
-                        $this->mensaje();
-
-                    }
+                    $_REQUEST['mensaje'] = 'requisitosCompletos';
+                    $this->mensaje();
 
                     // ------------------Division para los botones-------------------------
                     $atributos["id"] = "botones";
@@ -201,6 +187,28 @@ class GestionarContrato {
                     unset($atributos);
 
                     // Acordar Roles
+
+                    // -----------------CONTROL: Botón ----------------------------------------------------------------
+                    $esteCampo = 'botonVisualizarContrato';
+                    $atributos["id"] = $esteCampo;
+                    $atributos["tabIndex"] = $tab;
+                    $atributos["tipo"] = 'boton';
+                    // submit: no se coloca si se desea un tipo button genérico
+                    $atributos['submit'] = true;
+                    $atributos["simple"] = true;
+                    $atributos["estiloMarco"] = '';
+                    $atributos["estiloBoton"] = 'default';
+                    $atributos["block"] = false;
+                    // verificar: true para verificar el formulario antes de pasarlo al servidor.
+                    $atributos["verificar"] = '';
+                    $atributos["tipoSubmit"] = 'jquery'; // Dejar vacio para un submit normal, en este caso se ejecuta la función submit declarada en ready.js
+                    $atributos["valor"] = $this->lenguaje->getCadena($esteCampo);
+                    $atributos['nombreFormulario'] = $esteBloque['nombre'];
+                    $tab++;
+                    // Aplica atributos globales al control
+                    $atributos = array_merge($atributos, $atributosGlobales);
+                    echo $this->miFormulario->campoBotonBootstrapHtml($atributos);
+                    unset($atributos);
 
                     if (is_null($infoBeneficiario['id_contrato']) != true && $infoContrato != NULL && $infoContrato['numero_identificacion'] === NULL) {
 

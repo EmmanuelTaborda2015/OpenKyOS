@@ -66,7 +66,7 @@ class GenerarDocumento {
         /**
          *  2. Información de Beneficiario
          **/
-        var_dump($_REQUEST);exit;
+        //var_dump($_REQUEST);
         $this->obtenerInformacionBeneficiario();
 
         foreach ($this->beneficiario as $key => $value) {
@@ -79,8 +79,8 @@ class GenerarDocumento {
 
             $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
             $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
-            $this->rutaURL .= '/archivos/contratos/contratosCNDll';
-            $this->rutaAbsoluta .= '/archivos/contratos/contratosCNDll/';
+            $this->rutaURL .= '/archivos/contratos/Contratos_Altos_de_las_Acacias/';
+            $this->rutaAbsoluta .= '/archivos/contratos/Contratos_Altos_de_las_Acacias/';
             $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
 
@@ -112,7 +112,7 @@ class GenerarDocumento {
 
         $cadenaSql = $this->miSql->getCadenaSql('ConsultaProduccionBeneficiarios');
         $this->beneficiario = $this->esteRecursoDBPR->ejecutarAcceso($cadenaSql, "busqueda");
-
+        //var_dump($this->beneficiario);exit;
     }
 
     public function crearPDF() {
@@ -155,6 +155,14 @@ class GenerarDocumento {
 
             if ($beneficiario['torre'] != 0) {
                 $anexo_dir .= " Torre #" . $beneficiario['torre'] . " - ";
+            }
+
+            if ($beneficiario['interior'] != 0) {
+                $anexo_dir .= " Interior #" . $beneficiario['interior'];
+            }
+
+            if ($beneficiario['lote'] != 0) {
+                $anexo_dir .= " Lote #" . $beneficiario['lote'];
             }
 
             if ($beneficiario['casa_apartamento'] != 0) {
@@ -316,13 +324,13 @@ class GenerarDocumento {
                         </tr>
                          <tr>
                             <td style='width:15%;text-align=center;'><b>Departamento</b></td>
-                            <td style='width:10%;text-align=center;'>CORDOBA</td>
+                            <td style='width:10%;text-align=center;'>" . $beneficiario['departamento'] . "</td>
                             <td style='width:10%;text-align=center;'><b>Municipio</b></td>
-                            <td style='width:10%;text-align=center;'>CERETÉ</td>
+                            <td style='width:10%;text-align=center;'>" . $beneficiario['municipio'] . "</td>
                          </tr>
                          <tr>
                             <td style='width:15%;text-align=center;'><b>Urbanización</b></td>
-                            <td colspan='3'style='width:70%;text-align=center;'>Altos de las Acacias</td>
+                            <td colspan='3'style='width:70%;text-align=center;'>" . $beneficiario['urbanizacion'] . "</td>
                         </tr>
                         <tr>
                             <td style='width:15%;text-align=center;'><b>Estrato</b></td>
