@@ -66,7 +66,7 @@ class GenerarDocumento {
         /**
          *  2. Información de Beneficiario
          **/
-        //var_dump($_REQUEST);
+
         $this->obtenerInformacionBeneficiario();
 
         foreach ($this->beneficiario as $key => $value) {
@@ -79,8 +79,8 @@ class GenerarDocumento {
 
             $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
             $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
-            $this->rutaURL .= '/archivos/contratos/Contratos_Altos_de_las_Acacias/';
-            $this->rutaAbsoluta .= '/archivos/contratos/Contratos_Altos_de_las_Acacias/';
+            $this->rutaURL .= '/archivos/contratos/Contratos_Altos_de_las_Acacias/Contratos291_398/';
+            $this->rutaAbsoluta .= '/archivos/contratos/Contratos_Altos_de_las_Acacias/Contratos291_398/';
             $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
 
