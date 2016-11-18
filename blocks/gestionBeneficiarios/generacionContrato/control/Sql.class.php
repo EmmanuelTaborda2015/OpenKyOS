@@ -609,8 +609,8 @@ class Sql extends \Sql {
             case 'ConsultaProduccionBeneficiarios':
                 $cadenaSql = " SELECT *";
                 $cadenaSql .= " FROM interoperacion.contrato";
-                $cadenaSql .= " WHERE numero_contrato >= 291";
-                $cadenaSql .= " AND numero_contrato<=500;";
+                $cadenaSql .= " WHERE numero_contrato > 562";
+                $cadenaSql .= " AND numero_contrato<=856;";
                 break;
 
         }
