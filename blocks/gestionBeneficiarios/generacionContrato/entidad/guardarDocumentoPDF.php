@@ -79,8 +79,8 @@ class GenerarDocumento {
 
             $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
             $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
-            $this->rutaURL .= '/archivos/contratos/contratosCNDll/Contratos_Generales/';
-            $this->rutaAbsoluta .= '/archivos/contratos/contratosCNDll/Contratos_Generales/';
+            $this->rutaURL .= '/archivos/contratos/Contratos_Comisionamientos/SanLuisSince/';
+            $this->rutaAbsoluta .= '/archivos/contratos/Contratos_Comisionamientos/SanLuisSince/';
             $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
 
@@ -103,8 +103,9 @@ class GenerarDocumento {
     public function asosicarCodigoDocumento($beneficiario) {
 
         $this->prefijo = substr(md5(uniqid(time())), 0, 6);
-
-        $this->nombreContrato = $beneficiario['numero_identificacion'] . "_" . $beneficiario['nombres'] . "_" . $beneficiario['primer_apellido'] . "_" . $beneficiario['segundo_apellido'] . "_" . $beneficiario['numero_contrato'] . "_" . $this->prefijo . '.pdf';
+        $nombre_beneficiario = $beneficiario['nombres'] . " " . $beneficiario['primer_apellido'] . " " .
+        $beneficiario['segundo_apellido'];
+        $this->nombreContrato = $beneficiario['numero_contrato'] . "_" . $nombre_beneficiario . "_" . $beneficiario['numero_identificacion'] . "_" . $this->prefijo . '.pdf';
 
     }
 
@@ -287,9 +288,9 @@ class GenerarDocumento {
                                     <table style='width:100%;'>
                                         <tr>
                                             <td style='width:25%;text-align=center;'>Fecha</td>
-                                            <td style='width:25%;text-align=center;'><b>" . date('d') . "</b></td>
-                                            <td style='width:25%;text-align=center;'><b>" . date('m') . "</b></td>
-                                            <td style='width:25%;text-align=center;'><b>" . date('Y') . "</b></td>
+                                            <td style='width:25%;text-align=center;'><b>26</b></td>
+                                            <td style='width:25%;text-align=center;'><b>11</b></td>
+                                            <td style='width:25%;text-align=center;'><b>2016</b></td>
                                         </tr>
                                     </table>
                             </td>
