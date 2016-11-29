@@ -105,6 +105,7 @@ class GenerarDocumento {
         $this->prefijo = substr(md5(uniqid(time())), 0, 6);
         $nombre_beneficiario = $beneficiario['nombres'] . " " . $beneficiario['primer_apellido'] . " " .
         $beneficiario['segundo_apellido'];
+        //$beneficiario['nombre_comisionador']
         $this->nombreContrato = $beneficiario['numero_contrato'] . "_" . $nombre_beneficiario . "_" . $beneficiario['numero_identificacion'] . "_" . $this->prefijo . '.pdf';
 
     }
@@ -288,7 +289,7 @@ class GenerarDocumento {
                                     <table style='width:100%;'>
                                         <tr>
                                             <td style='width:25%;text-align=center;'>Fecha</td>
-                                            <td style='width:25%;text-align=center;'><b>26</b></td>
+                                            <td style='width:25%;text-align=center;'><b>28</b></td>
                                             <td style='width:25%;text-align=center;'><b>11</b></td>
                                             <td style='width:25%;text-align=center;'><b>2016</b></td>
                                         </tr>
