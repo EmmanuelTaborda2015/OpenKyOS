@@ -55,12 +55,13 @@ class GestionarContrato {
 		
 		foreach ( $infoCertificado as $generarActa ) {
 			
+			$_REQUEST = $generarActa;
+			
 			echo "Generando Acta ...";
 			echo "Número de Contrato: " . $_REQUEST['numero_contrato'];
 			echo "Identificación Beneficiario: " . $_REQUEST['numero_identificacion'];
 			echo "\ņ";
 			
-			$_REQUEST = $generarActa;
 			$_REQUEST['fecha_instalacion'] = date("d") . "-" . date("m") . "-" . date("Y");
 			$miDocumento = new GenerarDocumento ();
 			$miDocumento->crearActa ( $this->miSql, $this->rutaURL, $generarActa );
