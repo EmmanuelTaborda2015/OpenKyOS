@@ -57,10 +57,9 @@ class GestionarContrato {
 			
 			$_REQUEST = $generarActa;
 			
-			echo "Generando Acta ...";
-			echo "Número de Contrato: " . $_REQUEST['numero_contrato'];
-			echo "Identificación Beneficiario: " . $_REQUEST['numero_identificacion'];
-			echo "\ņ";
+			echo "Generando Acta ...<br>";
+			echo "Número de Contrato: " . $_REQUEST['numero_contrato'] . "<br>";
+			echo "Identificación Beneficiario: " . $_REQUEST['numero_identificacion'] . "<br>";
 			
 			$_REQUEST['fecha_instalacion'] = date("d") . "-" . date("m") . "-" . date("Y");
 			$miDocumento = new GenerarDocumento ();
