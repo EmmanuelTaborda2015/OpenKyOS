@@ -468,7 +468,6 @@ class GenerarDocumento {
                                                 <b>SUBPROYECTO: </b>" . $beneficiario['urbanizacion'] . "<br><br>
                                                 <b>BENEFICIARIO: </b>" . $beneficiario['nombre'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "<br><br>
                                                 <b>DIRECCIÓN: </b>" . $beneficiario['direccion_domicilio'] . "  " . $anexo_dir . "<br><br>
-                                                <b>FECHA:</b>____________<br>
                                                 <br>
                                                 <br>
 

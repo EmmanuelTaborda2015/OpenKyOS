@@ -300,8 +300,8 @@ class Sql extends \Sql {
                 $cadenaSql .= " FROM interoperacion.acta_entrega_portatil AS ep";
                 $cadenaSql .= " JOIN interoperacion.contrato as cn ON cn.id_beneficiario=ep.id_beneficiario";
                 $cadenaSql .= " JOIN interoperacion.beneficiario_potencial as bn ON bn.id_beneficiario=ep.id_beneficiario";
-                $cadenaSql .= " WHERE numero_contrato >=1 ";
-                $cadenaSql .= " AND numero_contrato <= 125";
+                $cadenaSql .= " WHERE numero_contrato >250 ";
+                $cadenaSql .= " AND numero_contrato <= 410";
                 $cadenaSql .= " order by cn.numero_contrato;";
                 break;
         }
