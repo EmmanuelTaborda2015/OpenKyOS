@@ -283,6 +283,27 @@ class Sql extends \Sql {
                 $cadenaSql .= " FROM interoperacion.politecnica_portatil";
                 $cadenaSql .= " WHERE id_equipo='" . $variable . "';";
                 break;
+
+            case 'consultaInformacionCertificador':
+                $cadenaSql = " SELECT ep.*, ";
+                $cadenaSql .= " cn.numero_contrato,";
+                $cadenaSql .= " cn.estrato as tp_beneficiario,";
+                $cadenaSql .= " cn.direccion_domicilio,";
+                $cadenaSql .= " cn.manzana,";
+                $cadenaSql .= " cn.bloque,";
+                $cadenaSql .= " cn.torre,";
+                $cadenaSql .= " cn.casa_apartamento,";
+                $cadenaSql .= " cn.interior,";
+                $cadenaSql .= " cn.lote,";
+                $cadenaSql .= " cn.piso,";
+                $cadenaSql .= " bn.municipio as codigo_municipio ";
+                $cadenaSql .= " FROM interoperacion.acta_entrega_portatil AS ep";
+                $cadenaSql .= " JOIN interoperacion.contrato as cn ON cn.id_beneficiario=ep.id_beneficiario";
+                $cadenaSql .= " JOIN interoperacion.beneficiario_potencial as bn ON bn.id_beneficiario=ep.id_beneficiario";
+                $cadenaSql .= " WHERE numero_contrato >=1 ";
+                $cadenaSql .= " AND numero_contrato <= 125";
+                $cadenaSql .= " order by cn.numero_contrato;";
+                break;
         }
 
         return $cadenaSql;
