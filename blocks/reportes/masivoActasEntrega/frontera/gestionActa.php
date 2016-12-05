@@ -50,12 +50,14 @@ class GestionarContrato {
 		$conexion = "interoperacion";
 		$esteRecursoDB = $this->miConfigurador->fabricaConexiones->getRecursoDB ( $conexion );
 		
-		$cadenaSql = $this->miSql->getCadenaSql ( 'consultarInformacionActa' );
-		$infoCertificado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" );
-		
-		foreach ( $infoCertificado as $generarActa ) {
+		$contratos = explode(", ",$_REQUEST['beneficiario']);
+
+		foreach ( $contratos as $generarActa ) {
 			
-			$_REQUEST = $generarActa;
+			$cadenaSql = $this->miSql->getCadenaSql ( 'consultarInformacionActa', $generarActa);
+			$infoCertificado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" )[0];
+
+			$_REQUEST = $infoCertificado;
 			
 			echo "Generando Acta ...<br>";
 			echo "Número de Contrato: " . $_REQUEST['numero_contrato'] . "<br>";

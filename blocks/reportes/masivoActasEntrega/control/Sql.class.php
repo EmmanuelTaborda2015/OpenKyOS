@@ -61,19 +61,20 @@ class Sql extends \Sql {
 				$cadenaSql .= " cn.casa_apartamento,";
 				$cadenaSql .= " cn.interior,";
 				$cadenaSql .= " cn.lote,";
-				$cadenaSql .= " '' as piso,";
+				$cadenaSql .= " cn.piso,";
 				$cadenaSql .= " cn.estrato_socioeconomico,";
-				$cadenaSql .= " cn.tecnologia,";
+				$cadenaSql .= " cn.tipo_tecnologia as tipo_tecnologia_con,";
 				//Atributos tabla masivo_kit (Kit Beneficiario)
 				$cadenaSql .= " mk.serial_com AS serial,";
 				$cadenaSql .= " mk.serial_esc,";
 				$cadenaSql .= " mk.mac1_esc,";
 				$cadenaSql .= " mk.mac2_esc,";
 				$cadenaSql .= " mk.marca_esc,";
-				$cadenaSql .= " mk.cantidad_esc,";
+				$cadenaSql .= " '1' as cantidad_esc,";
 				$cadenaSql .= " mk.ip_esc,";
 				//Atributos tabla masivo_pruebas (Pruebas)
-				$cadenaSql .=  " mp.hora_prueba as hora_prueba_vs ,";
+				$cadenaSql .=  " mp.hora_prueba,";
+				$cadenaSql .=  " mp.hora_prueba as hora_prueba_vs,";
 				$cadenaSql .=  " mp.resultado_vs ,";
 				$cadenaSql .=  " 'Mbps' as unidad_vs ,";
 				$cadenaSql .=  " '' as observaciones_vs ,";
@@ -119,7 +120,9 @@ class Sql extends \Sql {
 				//Atributos tabla masivo_beneficiario (Beneficiario)
 				$cadenaSql .= " mb.latitud,";
 				$cadenaSql .= " mb.longitud,";
-				$cadenaSql .= " mb.tipo_tecnologia";
+				$cadenaSql .= " mb.tipo_tecnologia as tecnologia,";
+				$cadenaSql .= " pr.descripcion as tipo_tecnologia";
+				
 				
 				$cadenaSql .= " FROM interoperacion.contrato AS cn";
 				$cadenaSql .= " FULL JOIN interoperacion.masivo_kit AS mk";
@@ -130,9 +133,9 @@ class Sql extends \Sql {
 				$cadenaSql .= " ON mk.serial_com=pc.serial";
 				$cadenaSql .= " FULL JOIN interoperacion.masivo_beneficiario AS mb";
 				$cadenaSql .= " ON cn.numero_identificacion=mb.identificacion";
-				
+				$cadenaSql .= " FULL JOIN parametros.parametros pr ON cn.tipo_tecnologia=pr.id_parametro";
 				$cadenaSql .= " WHERE ";
-				$cadenaSql .= " cn.estado_registro=TRUE ";
+				$cadenaSql .= " cn.estado_registro=TRUE AND numero_contrato='" . $variable . "'";
 			
 				break;
 // 			case 'consultaInformacionBeneficiario' :
