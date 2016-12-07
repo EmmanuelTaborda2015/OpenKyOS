@@ -79,8 +79,8 @@ class GenerarDocumento {
 
             $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
             $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
-            $this->rutaURL .= '/archivos/contratos/Contratos_Comisionamientos/SanLuisSince/';
-            $this->rutaAbsoluta .= '/archivos/contratos/Contratos_Comisionamientos/SanLuisSince/';
+            $this->rutaURL .= '/archivos/contratos/Contratos_Comisionamientos/ElRecuerdo/';
+            $this->rutaAbsoluta .= '/archivos/contratos/Contratos_Comisionamientos/ElRecuerdo/';
             $this->asosicarCodigoDocumento($value);
             $this->crearPDF();
 
@@ -106,7 +106,9 @@ class GenerarDocumento {
         $nombre_beneficiario = $beneficiario['nombres'] . " " . $beneficiario['primer_apellido'] . " " .
         $beneficiario['segundo_apellido'];
         //$beneficiario['nombre_comisionador']
-        $this->nombreContrato = $beneficiario['numero_contrato'] . "_" . $nombre_beneficiario . "_" . $beneficiario['numero_identificacion'] . "_" . $this->prefijo . '.pdf';
+        //$this->nombreContrato = $beneficiario['numero_contrato'] . "_" . $nombre_beneficiario . "_" . $beneficiario['numero_identificacion'] . "_" . $this->prefijo . '.pdf';
+
+        $this->nombreContrato = $beneficiario['manzana'] . $beneficiario['bloque'] . "." . $beneficiario['numero_identificacion'] . "." . $nombre_beneficiario . "." . $beneficiario['casa_apartamento'] . $this->prefijo . '.pdf';
 
     }
 
@@ -147,30 +149,27 @@ class GenerarDocumento {
 
             $anexo_dir = '';
 
-            if ($beneficiario['manzana'] != 0) {
+            if ($beneficiario['manzana'] != '0' && $beneficiario['manzana'] != '') {
                 $anexo_dir .= " Manzana  #" . $beneficiario['manzana'] . " - ";
             }
-
-            if ($beneficiario['bloque'] != 0) {
+            if ($beneficiario['bloque'] != '0' && $beneficiario['bloque'] != '') {
                 $anexo_dir .= " Bloque #" . $beneficiario['bloque'] . " - ";
             }
-
-            if ($beneficiario['torre'] != 0) {
+            if ($beneficiario['torre'] != '0' && $beneficiario['torre'] != '') {
                 $anexo_dir .= " Torre #" . $beneficiario['torre'] . " - ";
             }
-
-            if ($beneficiario['interior'] != 0) {
-                $anexo_dir .= " Interior #" . $beneficiario['interior'];
-            }
-
-            if ($beneficiario['lote'] != 0) {
-                $anexo_dir .= " Lote #" . $beneficiario['lote'];
-            }
-
-            if ($beneficiario['casa_apartamento'] != 0) {
+            if ($beneficiario['casa_apartamento'] != '0' && $beneficiario['casa_apartamento'] != '') {
                 $anexo_dir .= " Casa/Apartamento #" . $beneficiario['casa_apartamento'];
             }
-
+            if ($beneficiario['interior'] != '0' && $beneficiario['interior'] != '') {
+                $anexo_dir .= " Interior #" . $beneficiario['interior'];
+            }
+            if ($beneficiario['lote'] != '0' && $beneficiario['lote'] != '') {
+                $anexo_dir .= " Lote #" . $beneficiario['lote'];
+            }
+            if ($beneficiario['piso'] != '0' && $beneficiario['piso'] != '') {
+                $anexo_dir .= " Piso #" . $beneficiario['piso'];
+            }
         }
         {
             $cedula = ($beneficiario['tipo_documento'] == $CodigoCedula['codigo']) ? '<b>(X)</b>' : '';
