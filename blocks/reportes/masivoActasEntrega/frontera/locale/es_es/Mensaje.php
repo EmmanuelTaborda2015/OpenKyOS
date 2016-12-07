@@ -5,7 +5,7 @@
 
 $this->idioma['noDefinido'] = '';
 
-$this->idioma["beneficiario"] = "Identificación Beneficiario(s)";
+$this->idioma["beneficiario"] = "Número de Contrato(s)";
 
 $this->idioma["botonConsultar"] = "Consultar";
 

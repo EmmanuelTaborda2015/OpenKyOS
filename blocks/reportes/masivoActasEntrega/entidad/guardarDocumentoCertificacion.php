@@ -25,13 +25,15 @@ class GenerarDocumento {
     public $esteRecursoOP;
     public $rutaAbsoluta;
     public $rutaDocumento;
+    public $prefijo;
     
-    public function crearActa($sql, $ruta, $generarActa) {
+    public function crearActa($sql, $ruta, $generarActa, $prefijo) {
 
     	$this->miConfigurador = \Configurador::singleton();
         $this->miConfigurador->fabricaConexiones->setRecursoDB('principal');
         $this->miSql = $sql;
         $this->rutaURL = $ruta;
+        $this->prefijo = $prefijo;
 
         //Conexion a Base de Datos
         $conexion = "interoperacion";
@@ -48,11 +50,14 @@ class GenerarDocumento {
         /**
          *  2. Crear PDF
          **/
-
+        
         $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
         $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
-        $this->rutaURL .= '/archivos/actas_entrega_portatil_servicios/';
-        $this->rutaAbsoluta .= '/archivos/actas_entrega_portatil_servicios/';
+        $this->rutaURL .= '/archivos/actas_entrega_portatil_servicios/' . $this->prefijo . "/";
+        $this->rutaAbsoluta .= '/archivos/actas_entrega_portatil_servicios/' . $this->prefijo . "/";
+        
+        mkdir($this->rutaAbsoluta, 0777);
+        
         $this->asosicarCodigoDocumento();
         $this->crearPDF();
 
@@ -385,6 +390,7 @@ class GenerarDocumento {
 
         $this->contenidoPagina = $contenidoPagina;
     }
+    
 }
 
 

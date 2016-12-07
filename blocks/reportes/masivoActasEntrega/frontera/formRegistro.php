@@ -95,6 +95,41 @@ class Formulario {
         
  		// ----------------INICIO CONTROL: Campo Texto Cedulas a Generar Acta--------------------------------------------------------
 		        
+
+        $cadenaSql = $this->miSql->getCadenaSql ( 'consultarMasivo');
+        $filasTabla = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" );
+        
+        echo '<div id="Layer1" style="width:100%; height:200px; overflow-x:hidden; overflow-y:scroll;">';
+
+        if($filasTabla){
+
+        	  $tabla = "<table id='example' class='table table-striped table-bordered dt-responsive nowrap' cellspacing='0' width='100%'>
+                                      <thead>
+                                        <tr>
+                                            <th><center>Tipo de Acta<center></th>
+											<th><center>Enlace<center></th>
+                                        </tr>
+                                        </thead>";
+        	foreach ( $filasTabla as $key => $values ) {
+        		$tabla .= " <tr>
+        		<td ><center>$values[1]</center></td>";
+        		
+        		  if ($values === reset($filasTabla)) {
+        				$tabla .= "<td><center><a href='$values[2]' class='rojo' target='_blank'>$values[3]</a> </center> </td>";
+    			  }else{
+    			  		$tabla .= "<td><center><a href='$values[2]' target='_blank'>$values[3]</a> </center> </td>";
+    			  }
+    			
+        		$tabla .= "</tr>";
+        	}
+        	$tabla .= "</table>";
+        	
+        	echo $tabla;
+        	
+        	echo '</div><br>';
+        	
+        }
+        
 		        $esteCampo = 'beneficiario';
 		        $atributos ['nombre'] = $esteCampo;
 		        $atributos ['tipo'] = "text";

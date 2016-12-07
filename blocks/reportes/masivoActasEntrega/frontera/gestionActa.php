@@ -1,7 +1,6 @@
 <?php
 
-namespace reportes\masivoActas\frontera;
-
+// namespace reportes\masivoActas\frontera;
 use reportes\masivoActas\entidad\GenerarDocumento;
 
 if (! isset ( $GLOBALS ["autorizado"] )) {
@@ -50,218 +49,71 @@ class GestionarContrato {
 		$conexion = "interoperacion";
 		$esteRecursoDB = $this->miConfigurador->fabricaConexiones->getRecursoDB ( $conexion );
 		
-		$contratos = explode(", ",$_REQUEST['beneficiario']);
-
+		$contratos = explode ( ", ", $_REQUEST ['beneficiario'] );
+		
+		$prefijo = substr ( md5 ( uniqid ( time () ) ), 0, 6 );
+		
 		foreach ( $contratos as $generarActa ) {
 			
-			$cadenaSql = $this->miSql->getCadenaSql ( 'consultarInformacionActa', $generarActa);
-			$infoCertificado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" )[0];
-
-			$_REQUEST = $infoCertificado;
-			
-			echo "Generando Acta ...<br>";
-			echo "Número de Contrato: " . $_REQUEST['numero_contrato'] . "<br>";
-			echo "Identificación Beneficiario: " . $_REQUEST['numero_identificacion'] . "<br>";
-			
-			$_REQUEST['fecha_instalacion'] = date("d") . "-" . date("m") . "-" . date("Y");
-			$miDocumento = new GenerarDocumento ();
-			$miDocumento->crearActa ( $this->miSql, $this->rutaURL, $generarActa );
-			unset ( $miDocumento );
-			unset ( $_REQUEST );
+			$cadenaSql = $this->miSql->getCadenaSql ( 'consultarInformacionActa', $generarActa );
+			$infoCertificado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" ) [0];
+			if ($infoCertificado) {
+				
+				$_REQUEST = $infoCertificado;
+				
+				$_REQUEST ['fecha_instalacion'] = date ( "Y" ) . "-" . date ( "m" ) . "-" . date ( "d" );
+				$miDocumento = new GenerarDocumento ();
+				$miDocumento->crearActa ( $this->miSql, $this->rutaURL, $generarActa, $prefijo );
+				
+				unset ( $miDocumento );
+				unset ( $_REQUEST );
+			}
 		}
 		
-		// $esteBloque = $this->miConfigurador->getVariableConfiguracion("esteBloque");
-		// $miPaginaActual = $this->miConfigurador->getVariableConfiguracion("pagina");
+		$this->rutaCarpeta = $this->miConfigurador->getVariableConfiguracion ( "raizDocumento" );
+		$this->rutaCarpeta .= '/archivos/actas_entrega_portatil_servicios/';
+		$this->urlCarpeta = $this->miConfigurador->getVariableConfiguracion ( "host" ) . $this->miConfigurador->getVariableConfiguracion ( "site" );
+		$this->urlCarpeta .= '/archivos/actas_entrega_portatil_servicios/';
 		
-		// $conexion = "interoperacion";
-		// $esteRecursoDB = $this->miConfigurador->fabricaConexiones->getRecursoDB ( $conexion );
+		$nombre = $prefijo . "_actas_servicio.zip";
+		$enlace = $this->rutaCarpeta . $prefijo . "/";
+		$url = $this->urlCarpeta . $prefijo . "/";
 		
-		// $_REQUEST ['id_beneficiario'] = $_REQUEST ['id'];
-		// $_REQUEST['mensaje'] = "insertoInformacionCertificado";
+		$this->comprimir ( $enlace, $enlace . $nombre );
 		
-		// $cadenaSql = $this->miSql->getCadenaSql ( 'consultaInformacionCertificado' );
-		// $infoCertificado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" ) [0];
+		header ( "Content-type: application/octet-stream" );
+		header ( "Content-Type: application/force-download" );
+		header ( "Content-Disposition: attachment; filename=\"$nombre\"\n" );
+		readfile ( $enlace . $nombre );
 		
-		// if($infoCertificado){
+		$datos = array (
+				'ruta' => $url . $nombre,
+				'tipo_masivo' => 'Acta Entrega Servicios',
+				'nombre_archivo' => $prefijo 
+		);
 		
-		// $cadenaSql = $this->miSql->getCadenaSql('consultaInformacionBeneficiario');
-		// $infoBeneficiario = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda")[0];
+		$cadenaSql = $this->miSql->getCadenaSql ( 'registrarMasivo', $datos );
+		$resultado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" );
 		
-		// $_REQUEST = array_merge($_REQUEST, $infoBeneficiario);
+		// URL base
+		$url = $this->miConfigurador->getVariableConfiguracion ( "host" );
+		$url .= $this->miConfigurador->getVariableConfiguracion ( "site" );
+		$url .= "/index.php?";
 		
-		// $_REQUEST = array_merge($_REQUEST, $infoCertificado);
+		// Variables para Con
+		$cadenaACodificar = "pagina=" . $this->miConfigurador->getVariableConfiguracion ( "pagina" );
 		
-		// $_REQUEST['nombres'] = $_REQUEST['nombre'];
-		// $_REQUEST['numero_identificacion'] = $_REQUEST['identificacion'];
+		// Codificar las variables
+		$enlace = $this->miConfigurador->getVariableConfiguracion ( "enlace" );
+		$cadena = $this->miConfigurador->fabricaConexiones->crypto->codificar_url ( $cadenaACodificar, $enlace );
 		
-		// $_REQUEST['mensaje'] = "insertoInformacionCertificado";
+		// URL Consultar Proyectos
+		$recargarPagina = $url . $cadena;
 		
-		// if($infoCertificado['firmabeneficiario'] != "" && $infoCertificado['ruta_documento_ps'] == ""){
-		// $_REQUEST['firmabeneficiario'] = $infoCertificado['firmabeneficiario'];
-		// include_once $this->ruta . "entidad/guardarDocumentoCertificacion.php";
-		// }else if($infoCertificado['firmabeneficiario_aes'] != "" && $infoCertificado['ruta_documento_ps'] == ""){
-		// $_REQUEST['firmabeneficiario'] = $infoCertificado['firmabeneficiario_aes'];
-		// include_once $this->ruta . "entidad/guardarDocumentoCertificacion.php";
-		// }
+		$pagina1 = "http://localhost//OpenKyOS/index.php?data=L00lIJQOho5BVKGwUMRYmuzzH9-vnw4keACt_Lm6GEE";
+		$pagina2 = "pagina.php";
 		
-		// $cadenaSql = $this->miSql->getCadenaSql ( 'consultaInformacionCertificado' );
-		// $infoCertificado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" ) [0];
-		
-		// $_REQUEST = array_merge($_REQUEST, $infoCertificado);
-		
-		// {
-		
-		// $anexo_dir = '';
-		
-		// if ($infoBeneficiario['manzana_contrato'] != 0) {
-		// $anexo_dir .= " Manzana #" . $infoBeneficiario['manzana_contrato'] . " - ";
-		// }
-		
-		// if ($infoBeneficiario['bloque_contrato'] != 0) {
-		// $anexo_dir .= " Bloque #" . $infoBeneficiario['bloque_contrato'] . " - ";
-		// }
-		
-		// if ($infoBeneficiario['torre_contrato'] != 0) {
-		// $anexo_dir .= " Torre #" . $infoBeneficiario['torre_contrato'] . " - ";
-		// }
-		
-		// if ($infoBeneficiario['casa_apto_contrato'] != 0) {
-		// $anexo_dir .= " Casa/Apartamento #" . $infoBeneficiario['casa_apto_contrato'];
-		// }
-		
-		// if ($infoBeneficiario['interior_contrato'] != 0) {
-		// $anexo_dir .= " Interior #" . $infoBeneficiario['interior_contrato'];
-		// }
-		
-		// if ($infoBeneficiario['lote_contrato'] != 0) {
-		// $anexo_dir .= " Lote #" . $infoBeneficiario['lote_contrato'];
-		// }
-		
-		// }
-		// }else{
-		// $_REQUEST['mensaje'] = "certificadoNoDisponible";
-		// }
-		
-		// // Rescatar los datos de este bloque
-		
-		// // ---------------- SECCION: Parámetros Globales del Formulario ----------------------------------
-		
-		// {
-		// $atributosGlobales['campoSeguro'] = 'true';
-		// }
-		
-		// $_REQUEST['tiempo'] = time();
-		// // -------------------------------------------------------------------------------------------------
-		
-		// // ---------------- SECCION: Parámetros Generales del Formulario ----------------------------------
-		// $esteCampo = $esteBloque['nombre'];
-		// $atributos['id'] = $esteCampo;
-		// $atributos['nombre'] = $esteCampo;
-		// // Si no se coloca, entonces toma el valor predeterminado 'application/x-www-form-urlencoded'
-		// $atributos['tipoFormulario'] = 'multipart/form-data';
-		// // Si no se coloca, entonces toma el valor predeterminado 'POST'
-		// $atributos['metodo'] = 'POST';
-		// // Si no se coloca, entonces toma el valor predeterminado 'index.php' (Recomendado)
-		// $atributos['action'] = 'index.php';
-		// $atributos['titulo'] = $this->lenguaje->getCadena($esteCampo);
-		// // Si no se coloca, entonces toma el valor predeterminado.
-		// $atributos['estilo'] = '';
-		// $atributos['marco'] = true;
-		// $tab = 1;
-		// // ---------------- FIN SECCION: de Parámetros Generales del Formulario ----------------------------
-		
-		// // ----------------INICIAR EL FORMULARIO ------------------------------------------------------------
-		// $atributos['tipoEtiqueta'] = 'inicio';
-		// echo $this->miFormulario->formulario($atributos);
-		
-		// {
-		// {
-		// $esteCampo = 'Agrupacion';
-		// $atributos['id'] = $esteCampo;
-		// $atributos['leyenda'] = "ACTA DE ENTREGA DE PORTATIL Y SERVICIOS";
-		// echo $this->miFormulario->agrupacion('inicio', $atributos);
-		// unset($atributos);
-		
-		// {
-		
-		// $this->mensaje();
-		
-		// if($infoCertificado){
-		// // ------------------Division para los botones-------------------------
-		// $atributos["id"] = "botones";
-		// $atributos["estilo"] = "marcoBotones";
-		// $atributos["estiloEnLinea"] = "display:block;";
-		// echo $this->miFormulario->division("inicio", $atributos);
-		// unset($atributos);
-		
-		// // Acordar Roles
-		
-		// {
-		
-		// $url = $this->miConfigurador->getVariableConfiguracion("host");
-		// $url .= $this->miConfigurador->getVariableConfiguracion("site");
-		// $url .= "/index.php?";
-		
-		// // ------------------Division para los botones-------------------------
-		// $atributos["id"] = "botones_sin";
-		// $atributos["estilo"] = "marcoBotones";
-		// $atributos["estiloEnLinea"] = "display:block;";
-		// echo $this->miFormulario->division("inicio", $atributos);
-		// unset($atributos);
-		
-		// {
-		
-		// $valorCodificado = "action=" . $esteBloque["nombre"];
-		// $valorCodificado .= "&pagina=" . $this->miConfigurador->getVariableConfiguracion('pagina');
-		// $valorCodificado .= "&bloque=" . $esteBloque['nombre'];
-		// $valorCodificado .= "&bloqueGrupo=" . $esteBloque["grupo"];
-		// $valorCodificado .= "&id_beneficiario=" . $_REQUEST['id_beneficiario'];
-		// $valorCodificado .= "&opcion=generarCertificacion";
-		// $valorCodificado .= "&tipo_beneficiario=" . $infoBeneficiario['tipo_beneficiario'];
-		// $valorCodificado .= "&numero_contrato=" . $infoBeneficiario['numero_contrato'];
-		// $valorCodificado .= "&estrato_socioeconomico=" . $infoBeneficiario['estrato_socioeconomico'];
-		
-		// $enlace = $this->miConfigurador->getVariableConfiguracion("enlace");
-		// $cadena = $this->miConfigurador->fabricaConexiones->crypto->codificar_url($valorCodificado, $enlace);
-		
-		// $urlpdfNoFirmas = $url . $cadena;
-		
-		// echo "<b><a id='link_b' href='" . $urlpdfNoFirmas . "'>Acta Entrega de Servicios Instalados <br> Sin Firma</a></b>";
-		
-		// }
-		
-		// // ------------------Fin Division para los botones-------------------------
-		// echo $this->miFormulario->division("fin");
-		// unset($atributos);
-		
-		// // ------------------Division para los botones-------------------------
-		// $atributos["id"] = "botones_pdf";
-		// $atributos["estilo"] = "marcoBotones";
-		// $atributos["estiloEnLinea"] = "display:block;";
-		// echo $this->miFormulario->division("inicio", $atributos);
-		// unset($atributos);
-		
-		// {
-		// echo "<b><a id='link_a' target='_blank' href='" . $infoCertificado['ruta_documento_ps'] . "'>Acta Entrega de Servicios Instalados <br> Con Firma</a></b>";
-		// }
-		
-		// // ------------------Fin Division para los botones-------------------------
-		// echo $this->miFormulario->division("fin");
-		// unset($atributos);
-		
-		// }
-		
-		// // ------------------Fin Division para los botones-------------------------
-		// echo $this->miFormulario->division("fin");
-		// unset($atributos);
-		// }
-		
-		// }
-		// echo $this->miFormulario->agrupacion('fin');
-		// unset($atributos);
-		// }
-		
-		// }
+		header ( "location:$recargarPagina" );
 		
 		// ----------------FINALIZAR EL FORMULARIO ----------------------------------------------------------
 		// Se debe declarar el mismo atributo de marco con que se inició el formulario.
@@ -269,36 +121,36 @@ class GestionarContrato {
 		$atributos ['tipoEtiqueta'] = 'fin';
 		echo $this->miFormulario->formulario ( $atributos );
 	}
-	public function mensaje() {
-		switch ($_REQUEST ['mensaje']) {
-			
-			case 'insertoInformacionCertificado' :
-				$estilo_mensaje = 'success'; // information,warning,error,validation
-				$atributos ["mensaje"] = '<b>Acta de Entrega Disponible</b>';
-				break;
-			
-			case 'certificadoNoDisponible' :
-				$estilo_mensaje = 'error'; // information,warning,error,validation
-				$atributos ["mensaje"] = 'Al parecer no se ha generado el Acta de Entrega de Portatil o el Acta de Entrega de Servicios<b>';
-				break;
+	public function comprimir($ruta, $zip_salida, $handle = false, $recursivo = false) {
+		
+		/* Declara el handle del objeto */
+		if (! $handle) {
+			$handle = new ZipArchive ();
+			if ($handle->open ( $zip_salida, ZipArchive::CREATE ) === false) {
+				return false; /* Imposible crear el archivo ZIP */
+			}
 		}
-		// ------------------Division para los botones-------------------------
-		$atributos ['id'] = 'divMensaje';
-		$atributos ['estilo'] = 'marcoBotones';
-		echo $this->miFormulario->division ( "inicio", $atributos );
 		
-		// -------------Control texto-----------------------
-		$esteCampo = 'mostrarMensaje';
-		$atributos ["tamanno"] = '';
-		$atributos ["etiqueta"] = '';
-		$atributos ["estilo"] = $estilo_mensaje;
-		$atributos ["columnas"] = ''; // El control ocupa 47% del tamaño del formulario
-		echo $this->miFormulario->campoMensaje ( $atributos );
-		unset ( $atributos );
+		var_dump ( $ruta );
+		/* Procesa directorio */
+		if (is_dir ( $ruta )) {
+			/* Aseguramos que sea un directorio sin carácteres corruptos */
+			$handle->addEmptyDir ( $ruta ); /* Agrega el directorio comprimido */
+			foreach ( glob ( $ruta . '/*' ) as $url ) { /* Procesa cada directorio o archivo dentro de el */
+				$this->comprimir ( $url, $zip_salida, $handle, true ); /* Comprime el subdirectorio o archivo */
+			}
+			
+			/* Procesa archivo */
+		} else {
+			$handle->addFile ( $ruta );
+		}
 		
-		// ------------------Fin Division para los botones-------------------------
-		echo $this->miFormulario->division ( "fin" );
-		unset ( $atributos );
+		/* Finaliza el ZIP si no se está ejecutando una acción recursiva en progreso */
+		if (! $recursivo) {
+			$handle->close ();
+		}
+		
+		return true; /* Retorno satisfactorio */
 	}
 	public function mensajeModal() {
 		switch ($_REQUEST ['mensaje']) {
@@ -313,31 +165,6 @@ class GestionarContrato {
 				
 				break;
 		}
-		
-		// ----------------INICIO CONTROL: Ventana Modal Beneficiario Eliminado---------------------------------
-		
-		$atributos ['tipoEtiqueta'] = 'inicio';
-		$atributos ['titulo'] = 'Mensaje';
-		$atributos ['id'] = 'mensaje';
-		echo $this->miFormulario->modal ( $atributos );
-		unset ( $atributos );
-		
-		// ----------------INICIO CONTROL: Mapa--------------------------------------------------------
-		echo '<div style="text-align:center;">';
-		
-		echo '<p><h5>' . $mensaje . '</h5></p>';
-		
-		echo '</div>';
-		
-		// ----------------FIN CONTROL: Mapa--------------------------------------------------------
-		
-		echo '<div style="text-align:center;">';
-		
-		echo '</div>';
-		
-		$atributos ['tipoEtiqueta'] = 'fin';
-		echo $this->miFormulario->modal ( $atributos );
-		unset ( $atributos );
 	}
 }
 
