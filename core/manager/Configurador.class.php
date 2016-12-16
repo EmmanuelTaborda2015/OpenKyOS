@@ -11,12 +11,12 @@
  * @license  GPL Version 3 o posterior
  *
  */
-require_once ("config/ArchivoConfiguracion.class.php");
+require_once "config/ArchivoConfiguracion.class.php";
 
 class Configurador {
-    
+
     private static $instance;
-    
+
     /**
      * Arreglo que contiene las variables de configuración globales para el aplicativo.
      * Las variables se extraen de la base de datos de acuerdo a los datos de acceso declarados
@@ -25,39 +25,39 @@ class Configurador {
      * @var string
      */
     public $configuracion;
-    
+
     /**
      * Fabrica de Conexiones a la base de datos de estructura
      *
      * @var ConectorBasicoDB
      */
     public $fabricaConexiones;
-    
+
     public $conexionDB;
-    
+
     private function __construct() {
-        
-        $this->configuracion ["inicio"] = true;
-        $this->conexion = array ();
-    
+
+        $this->configuracion["inicio"] = true;
+        $this->conexion = array();
+
     }
-    
+
     public static function singleton() {
-        
-        if (! isset ( self::$instance )) {
+
+        if (!isset(self::$instance)) {
             $className = __CLASS__;
-            self::$instance = new $className ();
+            self::$instance = new $className();
         }
         return self::$instance;
-    
+
     }
-    
+
     public function setConectorDB($objeto) {
-        
+
         $this->fabricaConexiones = $objeto;
-    
+
     }
-    
+
     /**
      * Rescata las variables de configuración que se encuentran en config.inc.php y
      * en la base de datos principal cuyos datos de conexión los retorna la función
@@ -68,81 +68,80 @@ class Configurador {
      *            Ninguno
      * @return number
      */
-    function variable() {
-        
-        $this->setMainConfig ();
-        $this->fabricaConexiones->setConfiguracion ( $this->configuracion );
-        
+    public function variable() {
+
+        $this->setMainConfig();
+        $this->fabricaConexiones->setConfiguracion($this->configuracion);
+
         // Crear un recurso llamado "configuracion"
-        $resultado = $this->fabricaConexiones->setRecursoDB ( '', 'configuracion' );
-        
+        $resultado = $this->fabricaConexiones->setRecursoDB('', 'configuracion');
+
         if ($resultado) {
-            $this->conexionDB = $this->fabricaConexiones->getRecursoDB ( 'configuracion' );
+            $this->conexionDB = $this->fabricaConexiones->getRecursoDB('configuracion');
         }
-        
-        if ($this->conexionDB && $this->rescatarVariablesDB ()) {
+
+        if ($this->conexionDB && $this->rescatarVariablesDB()) {
             return true;
         }
         return false;
-    
+
     }
-    
+
     /**
      * Rescata las variables que vienen codificadas en el atributo formSaraData.
      */
-    
-    function variablesCodificadas(){
-        
-        
+
+    public function variablesCodificadas() {
+
         // La variable POST formSaraData contiene información codificada
-        if (isset ( $_REQUEST ['formSaraData'] )) {
-            
-            $dato=$_REQUEST ['formSaraData'];
-            unset($_REQUEST ['formSaraData']);
-            $campos=$_REQUEST;
-            $this->fabricaConexiones->crypto->decodificar_url ( $dato);
-            
-        }else{
-            $campos=array();
+        if (isset($_REQUEST['formSaraData'])) {
+
+            $dato = $_REQUEST['formSaraData'];
+            unset($_REQUEST['formSaraData']);
+            $campos = $_REQUEST;
+            $this->fabricaConexiones->crypto->decodificar_url($dato);
+
+        } else {
+            $campos = array();
         }
-        
+
         //Si existen campos seguros se deben decodificar sus nombres
-        if(isset($_REQUEST['campoSeguro'])){
-            foreach ($campos as $clave=>$valor){
-                $dato=$this->fabricaConexiones->crypto->decodificar($clave);
-                $dato=substr ( $dato , 0, strlen($dato)-strlen($_REQUEST['campoSeguro']) );
-                $_REQUEST[$dato]=$valor;
+        if (isset($_REQUEST['campoSeguro'])) {
+            foreach ($campos as $clave => $valor) {
+                $dato = $this->fabricaConexiones->crypto->decodificar($clave);
+                $dato = substr($dato, 0, strlen($dato) - strlen($_REQUEST['campoSeguro']));
+                $_REQUEST[$dato] = $valor;
                 unset($_REQUEST[$clave]);
             }
         }
-        
+
     }
-    
+
     /**
      * Método.
      * Obtiene los datos de acceso a la base de datos principal del
      * aplicativo.
      *
-     * @param string $ruta            
+     * @param string $ruta
      * @return boolean
      */
     private function setMainConfig() {
-        
-        $configuracionBasica = ArchivoConfiguracion::singleton ();
-        
+
+        $configuracionBasica = ArchivoConfiguracion::singleton();
+
         $configuracionBasica->setRuta('core/');
         $configuracionBasica->variable();
-        $conf = $configuracionBasica->getConf ();
-        
-        foreach ( $conf as $clave => $valor ) {
-            
-            $this->configuracion [$clave] = $valor;
+        $conf = $configuracionBasica->getConf();
+
+        foreach ($conf as $clave => $valor) {
+
+            $this->configuracion[$clave] = $valor;
         }
-        
+
         return true;
-    
+
     }
-    
+
     /**
      * Método.
      * Accede a la base de datos de estructura y rescata los valores
@@ -151,84 +150,92 @@ class Configurador {
      * @return number
      */
     private function rescatarVariablesDB() {
-        
-        if ($this->conexionDB->getEnlace ()) {
-            
+
+        if ($this->conexionDB->getEnlace()) {
+
             $cadenaSql = "SELECT ";
             $cadenaSql .= " parametro,  ";
             $cadenaSql .= " valor  ";
             $cadenaSql .= "FROM ";
-            $cadenaSql .= $this->configuracion ["dbprefijo"] . "configuracion ";
-            $this->total = $this->conexionDB->registro_db ( $cadenaSql, 0 );
-            
+            $cadenaSql .= $this->configuracion["dbprefijo"] . "configuracion ";
+            $this->total = $this->conexionDB->registro_db($cadenaSql, 0);
+
             if ($this->total > 0) {
-                $this->registro = $this->conexionDB->getRegistroDb ();
-                for($j = 0; $j < $this->total; $j ++) {
-                    $this->configuracion [trim ( $this->registro [$j] ["parametro"] )] = trim ( $this->registro [$j] ["valor"] );
-                
+                $this->registro = $this->conexionDB->getRegistroDb();
+                for ($j = 0; $j < $this->total; $j++) {
+
+                    if (trim($this->registro[$j]["parametro"]) == 'host') {
+                        $this->configuracion[trim($this->registro[$j]["parametro"])] = trim("http://192.168.0.7");
+                    } else {
+
+                        $this->configuracion[trim($this->registro[$j]["parametro"])] = trim($this->registro[$j]["valor"]);
+                    }
+
                 }
-               return true;
+
+                //var_dump($this->configuracion);
+                return true;
             } else {
-                
-                error_log ( "No se puede iniciar la aplicacion. Imposible rescatar las variables de configuracion!", 0 );
+
+                error_log("No se puede iniciar la aplicacion. Imposible rescatar las variables de configuracion!", 0);
                 return 0;
             }
         } else {
-            error_log ( "No se puede iniciar la aplicacion. Imposible determinar un recurso de base de datos.!", 0 );
+            error_log("No se puede iniciar la aplicacion. Imposible determinar un recurso de base de datos.!", 0);
             return 0;
         }
-    
+
     }
-    
+
     /**
      * Método de acceso que retorna el arreglo con todos los datos de configuración
      *
      * @return string[]
      */
-    function getConfiguracion() {
-        
+    public function getConfiguracion() {
+
         return $this->configuracion;
-    
+
     }
-    
+
     /**
      * Método de acceso, retorna una variable específica desde el arreglo de
      * configuración.
      *
-     * @param string $cadena            
+     * @param string $cadena
      * @return string boolean
      */
-    function getVariableConfiguracion($cadena = "") {
-        
-        if (isset ( $this->configuracion [$cadena] )) {
-            
-            return $this->configuracion [$cadena];
+    public function getVariableConfiguracion($cadena = "") {
+
+        if (isset($this->configuracion[$cadena])) {
+
+            return $this->configuracion[$cadena];
         }
-        
+
         return false;
-    
+
     }
-    
+
     /**
      * Método de acceso.
      * Permite que se agreguen variables al arreglo de
      * configuración.
      *
-     * @param string $variable            
-     * @param string $cadena            
+     * @param string $variable
+     * @param string $cadena
      * @return boolean
      */
-    function setVariableConfiguracion($variable = '', $cadena = '') {
-        
+    public function setVariableConfiguracion($variable = '', $cadena = '') {
+
         if ($variable != '' && $cadena != '') {
-            $this->configuracion [$variable] = $cadena;
+            $this->configuracion[$variable] = $cadena;
         } else {
-            if (isset ( $this->configuracion [$variable] ) && $cadena == null) {
-                unset ( $this->configuracion [$variable] );
+            if (isset($this->configuracion[$variable]) && $cadena == null) {
+                unset($this->configuracion[$variable]);
             }
         }
         return true;
-    
+
     }
 
 }?>
