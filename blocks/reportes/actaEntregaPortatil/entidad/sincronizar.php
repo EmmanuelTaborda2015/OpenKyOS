@@ -113,7 +113,7 @@ class Sincronizar {
         );
 
         $result = RestClient::post($url, $archivo, $datosConexion[0]['usuario'], $datosConexion[0]['password']);
-        var_dump($result);exit;
+
         $json_decode = json_decode(json_encode($result->getResponse()), true);
 
         $status = json_decode($json_decode, true);
