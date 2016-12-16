@@ -25,6 +25,8 @@ class GenerarDocumento {
     public $esteRecursoOP;
     public $rutaAbsoluta;
     public function __construct($sql, $lenguaje) {
+        ini_set('memory_limit', '650M');
+        ini_set('max_execution_time', 100000);
         $this->miConfigurador = \Configurador::singleton();
         $this->miConfigurador->fabricaConexiones->setRecursoDB('principal');
         $this->miSql = $sql;
