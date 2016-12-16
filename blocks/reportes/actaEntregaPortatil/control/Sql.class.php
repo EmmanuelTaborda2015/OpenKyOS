@@ -301,9 +301,42 @@ class Sql extends \Sql {
                 $cadenaSql .= " JOIN interoperacion.contrato as cn ON cn.id_beneficiario=ep.id_beneficiario";
                 $cadenaSql .= " JOIN interoperacion.beneficiario_potencial as bn ON bn.id_beneficiario=ep.id_beneficiario";
                 $cadenaSql .= " WHERE numero_contrato >250 ";
-                $cadenaSql .= " AND numero_contrato <= 410";
+                $cadenaSql .= " AND numero_contrato <= 255";
                 $cadenaSql .= " order by cn.numero_contrato;";
                 break;
+            // Sincronizar Alfresco
+            case "consultarCarpetaSoportes":
+                $cadenaSql = " SELECT pr.id_parametro, pr.descripcion ";
+                $cadenaSql .= " FROM parametros.parametros pr";
+                $cadenaSql .= " JOIN parametros.relacion_parametro rl ON rl.id_rel_parametro=pr.rel_parametro";
+                $cadenaSql .= " WHERE ";
+                $cadenaSql .= " pr.estado_registro=TRUE ";
+                $cadenaSql .= " AND rl.descripcion='Alfresco Folders'";
+                $cadenaSql .= " AND pr.codigo='" . $variable . "' ";
+                $cadenaSql .= " AND rl.estado_registro=TRUE ";
+                break;
+
+            case "alfrescoDirectorio":
+                $cadenaSql = "SELECT parametros.descripcion ";
+                $cadenaSql .= " FROM parametros.parametros ";
+                $cadenaSql .= " JOIN parametros.relacion_parametro ON relacion_parametro.id_rel_parametro=parametros.rel_parametro ";
+                $cadenaSql .= " WHERE parametros.estado_registro=TRUE AND relacion_parametro.descripcion='Directorio Alfresco Site' ";
+                break;
+
+            case "alfrescoUser":
+                $cadenaSql = " SELECT DISTINCT id_beneficiario, nombre_carpeta_dep as padre, nombre_carpeta_mun as hijo, site_alfresco as site ";
+                $cadenaSql .= " FROM interoperacion.beneficiario_potencial ";
+                $cadenaSql .= " INNER JOIN interoperacion.carpeta_alfresco on beneficiario_potencial.departamento=cast(carpeta_alfresco.cod_departamento as integer) ";
+                $cadenaSql .= " WHERE cast(cod_municipio as integer)=municipio ";
+                $cadenaSql .= " AND id_beneficiario='" . $variable . "' ";
+                break;
+
+            case "alfrescoLog":
+                $cadenaSql = "SELECT host, usuario, password ";
+                $cadenaSql .= " FROM parametros.api_data ";
+                $cadenaSql .= " WHERE componente='alfresco' ";
+                break;
+
         }
 
         return $cadenaSql;

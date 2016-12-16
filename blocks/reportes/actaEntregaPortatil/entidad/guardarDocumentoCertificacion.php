@@ -11,6 +11,7 @@ $ruta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
 $host = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site") . "/plugin/html2pfd/";
 
 include $ruta . "/plugin/html2pdf/html2pdf.class.php";
+require_once 'sincronizar.php';
 class GenerarDocumento {
     public $miConfigurador;
     public $elementos;
@@ -23,11 +24,14 @@ class GenerarDocumento {
     public $beneficiario;
     public $esteRecursoOP;
     public $rutaAbsoluta;
-    public function __construct($sql) {
+    public function __construct($sql, $lenguaje) {
         $this->miConfigurador = \Configurador::singleton();
         $this->miConfigurador->fabricaConexiones->setRecursoDB('principal');
         $this->miSql = $sql;
+        $this->lenguaje = $lenguaje;
         $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
+
+        $this->sincronizacion = new Sincronizar($lenguaje, $sql);
 
         // Conexion a Base de Datos
         $conexion = "produccion";
@@ -36,9 +40,9 @@ class GenerarDocumento {
         $this->rutaURL = $this->miConfigurador->getVariableConfiguracion("host") . $this->miConfigurador->getVariableConfiguracion("site");
         $this->rutaAbsoluta = $this->miConfigurador->getVariableConfiguracion("raizDocumento");
 
-        $this->rutaURLArchivo = $this->rutaURL . '/archivos/actas_entrega_portatil/Actas_Comisionamiento/Cerete_Altos_de_las_Acacias/';
+        $this->rutaURLArchivo = $this->rutaURL . '/archivos/actas_entrega_portatil/';
 
-        $this->rutaAbsolutaArchivo = $this->rutaAbsoluta . '/archivos/actas_entrega_portatil/Actas_Comisionamiento/Cerete_Altos_de_las_Acacias/';
+        $this->rutaAbsolutaArchivo = $this->rutaAbsoluta . '/archivos/actas_entrega_portatil/';
 
         if (!isset($_REQUEST["bloqueGrupo"]) || $_REQUEST["bloqueGrupo"] == "") {
             $this->rutaURL .= "/blocks/" . $_REQUEST["bloque"] . "/";
@@ -47,14 +51,12 @@ class GenerarDocumento {
             $this->rutaURL .= "/blocks/" . $_REQUEST["bloqueGrupo"] . "/" . $_REQUEST["bloque"] . "/";
             $this->rutaAbsoluta .= "/blocks/" . $_REQUEST["bloqueGrupo"] . "/" . $_REQUEST["bloque"] . "/";
         }
-        //var_dump($_REQUEST);exit;
-        //echo "generar Masivo";
 
         $this->rutaURL_Bloque = $this->rutaURL;
         $this->rutaAbsoluta_Bloque = $this->rutaAbsoluta;
 
         $this->obtenerInformacionBeneficiario();
-        //var_dump($this->beneficiario);exit;
+        //var_dump($this->beneficiario);EXIT;
         foreach ($this->beneficiario as $key => $value) {
 
             $this->asosicarCodigoDocumento($value);
@@ -62,29 +64,55 @@ class GenerarDocumento {
             $this->estruturaDocumento($value);
             $this->crearPDF();
 
+            unset($this->contenidoPagina);
+            $this->contenidoPagina = NULL;
+
             $this->estruturaDocumentoCartel($value);
             $this->crearPDFCartel();
 
+            unset($this->contenidoPagina);
+            $this->contenidoPagina = NULL;
+
+            $archivo_datos = array(
+                'ruta_archivo' => $this->rutaURLArchivo . $this->nombreDocumento,
+                'rutaabsoluta' => $this->rutaAbsolutaArchivo . $this->nombreDocumento,
+                'nombre_archivo' => $this->nombreDocumento,
+                'campo' => " ",
+                'tipo_documento' => '131',
+            );
+            //var_dump($archivo_datos);exit;
+            $this->sincronizacion->sincronizarAlfresco($value['id_beneficiario'], $archivo_datos);
+
+            unset($value);
+            $value = NULL;
+
+            unset($archivo_datos);
+            $archivo_datos = NULL;
+
         }
-        echo "Termine";exit;
-        $arreglo = array(
-            'nombre_contrato' => $this->nombreDocumento,
-            'ruta_contrato' => $this->rutaURL . $this->nombreDocumento,
-        );
 
-        $cadenaSql = $this->miSql->getCadenaSql('registrarDocumentoCertificado', $arreglo);
+        echo "TERMINE ... RECONFIGURAR SCRIPT PARA INICIAR";
+        exit;
+/*
+$arreglo = array(
+'nombre_contrato' => $this->nombreDocumento,
+'ruta_contrato' => $this->rutaURL . $this->nombreDocumento,
+);
 
-        $this->registro_certificado = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "acceso");
+$cadenaSql = $this->miSql->getCadenaSql('registrarDocumentoCertificado', $arreglo);
 
-        $arreglo = array(
-            'id_beneficiario' => $_REQUEST['id_beneficiario'],
-            'tipologia' => "555",
-            'nombre_documento' => $this->nombreDocumento,
-            'ruta_relativa' => $this->rutaURL . $this->nombreDocumento,
-        );
+$this->registro_certificado = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "acceso");
 
-        // $cadenaSql = $this->miSql->getCadenaSql('registrarRequisito', $arreglo);
-        // $this->registroRequisito = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "acceso");
+$arreglo = array(
+'id_beneficiario' => $_REQUEST['id_beneficiario'],
+'tipologia' => "555",
+'nombre_documento' => $this->nombreDocumento,
+'ruta_relativa' => $this->rutaURL . $this->nombreDocumento,
+);
+
+// $cadenaSql = $this->miSql->getCadenaSql('registrarRequisito', $arreglo);
+// $this->registroRequisito = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "acceso");
+ */
     }
 
     public function obtenerInformacionBeneficiario() {
@@ -124,19 +152,31 @@ class GenerarDocumento {
     }
 
     public function asosicarCodigoDocumento($beneficiario) {
+
+        unset($this->prefijo);
+        $this->prefijo = NULL;
+
+        unset($this->nombreCartel);
+        $this->nombreCartel = NULL;
+
+        unset($this->nombreDocumento);
+        $this->nombreDocumento = NULL;
+
         $this->prefijo = substr(md5(uniqid(time())), 0, 6);
         $cadenaSql = $this->miSql->getCadenaSql('consultarParametro', '008');
         $id_parametro = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda")[0];
         $tipo_documento = $id_parametro['id_parametro'];
-        $descripcion_documento = $id_parametro['id_parametro'] . '_' . $id_parametro['descripcion'];
+        $descripcion_documento = $id_parametro['codigo'] . '_' . str_replace(" ", "_", $id_parametro['descripcion']);
         //$nombre_archivo = "AEP";
-        //$this->nombreDocumento = $_REQUEST['id_beneficiario'] . "_" . $descripcion_documento . "_" . $this->prefijo . '.pdf';
+        $this->nombreDocumento = $beneficiario['id_beneficiario'] . "_" . $descripcion_documento . "_" . $this->prefijo . '.pdf';
 
-        $this->nombreDocumento = $beneficiario['interior'] . "_" . $beneficiario['direccion_domicilio'] . "_" . $beneficiario['identificacion'] . "_Acta_Entrega_Portatil_" . $this->prefijo . '.pdf';
-        $this->nombreCartel = $beneficiario['interior'] . "_" . $beneficiario['direccion_domicilio'] . "_" . $beneficiario['identificacion'] . "_Cartel_" . $this->prefijo . '.pdf';
+        //$this->nombreDocumento = $beneficiario['interior'] . "_" . $beneficiario['direccion_domicilio'] . "_" . $beneficiario['identificacion'] . "_Acta_Entrega_Portatil_" . $this->prefijo . '.pdf';
+        //$this->nombreCartel = $beneficiario['interior'] . "_" . $beneficiario['direccion_domicilio'] . "_" . $beneficiario['identificacion'] . "_Cartel_" . $this->prefijo . '.pdf';
+
+        $this->nombreCartel = $beneficiario['id_beneficiario'] . "_" . $beneficiario['identificacion'] . "_Cartel_" . $this->prefijo . '.pdf';
+
     }
     public function estruturaDocumento($beneficiario) {
-        unset($this->contenidoPagina);
 
         //$firma_contratista = $firmacontratista;
         /*
@@ -387,12 +427,16 @@ class GenerarDocumento {
         $contenidoPagina .= "</page>";
 
         $this->contenidoPagina = $contenidoPagina;
+
         unset($beneficiario);
+        $beneficiario = NULL;
+
+        unset($contenidoPagina);
+        $contenidoPagina = NULL;
 
     }
 
     public function estruturaDocumentoCartel($beneficiario) {
-        unset($this->contenidoPagina);
 
         {
             $anexo_dir = '';
@@ -500,10 +544,16 @@ class GenerarDocumento {
         $contenidoPagina .= "</page>";
 
         $this->contenidoPagina = $contenidoPagina;
+
         unset($beneficiario);
+        $beneficiario = NULL;
+
+        unset($contenidoPagina);
+        $contenidoPagina = NULL;
+
     }
 
 }
-$miDocumento = new GenerarDocumento($this->miSql);
+$miDocumento = new GenerarDocumento($this->miSql, $this->lenguaje);
 
 ?>
