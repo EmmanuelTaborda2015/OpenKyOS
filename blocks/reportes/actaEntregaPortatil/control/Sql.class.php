@@ -300,9 +300,9 @@ class Sql extends \Sql {
                 $cadenaSql .= " FROM interoperacion.acta_entrega_portatil AS ep";
                 $cadenaSql .= " JOIN interoperacion.contrato as cn ON cn.id_beneficiario=ep.id_beneficiario";
                 $cadenaSql .= " JOIN interoperacion.beneficiario_potencial as bn ON bn.id_beneficiario=ep.id_beneficiario";
-                $cadenaSql .= " WHERE numero_contrato >250 ";
-                $cadenaSql .= " AND numero_contrato <= 255";
-                $cadenaSql .= " order by cn.numero_contrato;";
+                $cadenaSql .= " WHERE ep.id >=412 ";
+                $cadenaSql .= " AND ep.id <= 491";
+                $cadenaSql .= " order by ep.id;";
                 break;
             // Sincronizar Alfresco
             case "consultarCarpetaSoportes":

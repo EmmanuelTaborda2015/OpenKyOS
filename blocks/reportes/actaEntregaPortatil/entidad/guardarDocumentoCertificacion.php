@@ -83,7 +83,7 @@ class GenerarDocumento {
                 'tipo_documento' => '131',
             );
             //var_dump($archivo_datos);exit;
-            $this->sincronizacion->sincronizarAlfresco($value['id_beneficiario'], $archivo_datos);
+            //$this->sincronizacion->sincronizarAlfresco($value['id_beneficiario'], $archivo_datos);
 
             unset($value);
             $value = NULL;
@@ -347,53 +347,53 @@ $arreglo = array(
                                     <table width:100%;>
                                         <tr>
                                             <td align='rigth'  style=' width:20%;'><b>Marca</b></td>
-                                            <td align='rigth' style='width:30%;'>Hewlett Packard</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['marca']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Modelo</b></td>
-                                            <td align='rigth' style='width:30%;'>HP 245 G4 Notebook PC</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['modelo']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Serial</b></td>
-                                            <td align='rigth' style='width:30%;'></td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['serial']) . "</td>
                                             <td align='rigth' style=' width:20%;'>Procesador</td>
-                                            <td align='rigth' style='width:30%;'>AMD A8-7410 4 cores 2.2 GHz</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['procesador']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Memoria RAM</b></td>
-                                            <td align='rigth' style='width:30%;'>DDR3 4096 MB</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['memoria_ram']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Disco Duro</b></td>
-                                            <td align='rigth' style='width:30%;'>500 GB</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['disco_duro']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Sistema Operativo</b></td>
-                                            <td align='rigth' style='width:30%;'>UBUNTU</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['sistema_operativo']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Cámara</b></td>
-                                            <td align='rigth' style='width:30%;'>Integrada 720 px HD</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['camara']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Audio</b></td>
-                                            <td align='rigth' style='width:30%;'>Integrado Estéreo</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['audio']) . "o</td>
                                             <td align='rigth' style=' width:20%;'><b>Batería</b></td>
-                                            <td align='rigth' style='width:30%;'>41440 mWh</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['bateria']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Tarjeta de Red (Alámbrica)</b></td>
-                                            <td align='rigth' style='width:30%;'>Integrada</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['targeta_red_alambrica']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Tarjeta de Red (Inalámbrica)</b></td>
-                                            <td align='rigth' style='width:30%;'>Integrada</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['targeta_red_inalambrica']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Cargador</b></td>
-                                            <td align='rigth' style='width:30%;'>Smart AC 100 v a 120 v</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['cargador']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Pantalla</b></td>
-                                            <td align='rigth' style='width:30%;'>HD SVA anti-brillo LED 14’’</td>
+                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['pantalla']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth'  style=' width:20%;'><b>Sitio web de soporte</b></td>
-                                            <td align='rigth' colspan='3' style='width:80%;'>http://www.hp.com/latam/co/soporte/cas/</td>
+                                            <td align='rigth' colspan='3' style='width:80%;'>" . trim($beneficiario['web_soporte']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth'  style=' width:20%;'><b>Teléfono de soporte</b></td>
-                                            <td align='rigth' colspan='3' style='width:80%;'>0180005147468368 - 018000961016.</td>
+                                            <td align='rigth' colspan='3' style='width:80%;'>" . trim($beneficiario['telefono_soporte']) . "</td>
                                         </tr>
                                     </table>
                                     <br>
