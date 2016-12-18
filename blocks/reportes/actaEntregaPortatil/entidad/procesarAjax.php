@@ -37,7 +37,7 @@ class procesarAjax {
 
                 $cadenaSql = $this->sql->getCadenaSql('consultarEquipo', $_REQUEST['query']);
 
-                $resultadoItems = $esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
+                $resultadoItems = $esteRecursoDBPR->ejecutarAcceso($cadenaSql, "busqueda");
 
                 foreach ($resultadoItems as $key => $values) {
                     $keys = array(
