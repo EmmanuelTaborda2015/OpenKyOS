@@ -66,9 +66,12 @@ class Sql extends \Sql {
 				$cadenaSql .= " cn.tipo_tecnologia as tipo_tecnologia_con,";
 				// Atributos tabla masivo_kit (Kit Beneficiario)
 				$cadenaSql .= " mk.serial_com AS serial,";
-				$cadenaSql .= " mk.serial_esc,";
-				$cadenaSql .= " mk.mac1_esc,";
-				$cadenaSql .= " mk.mac2_esc,";
+// 				$cadenaSql .= " mk.serial_esc,";
+// 				$cadenaSql .= " mk.mac1_esc,";
+// 				$cadenaSql .= " mk.mac2_esc,";
+				$cadenaSql .= " '' as serial_esc,";
+				$cadenaSql .= " '' as mac1_esc,";
+				$cadenaSql .= " '' as mac2_esc,";
 				$cadenaSql .= " 'PREVAIL' as marca_esc,";
 				$cadenaSql .= " '1' as cantidad_esc,";
 				$cadenaSql .= " mk.ip_esc,";
