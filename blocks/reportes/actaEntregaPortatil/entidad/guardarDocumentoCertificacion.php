@@ -291,6 +291,8 @@ $arreglo = array(
                         </page_header>
                        ";
 //var_dump($beneficiario);exit;
+
+        // trim($beneficiario['serial'])
         $contenidoPagina .= "
                             <br>
                             <br>
@@ -353,7 +355,7 @@ $arreglo = array(
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Serial</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['serial']) . "</td>
+                                            <td align='rigth' style='width:30%;'> </td>
                                             <td align='rigth' style=' width:20%;'>Procesador</td>
                                             <td align='rigth' style='width:30%;'>" . trim($beneficiario['procesador']) . "</td>
                                         </tr>
