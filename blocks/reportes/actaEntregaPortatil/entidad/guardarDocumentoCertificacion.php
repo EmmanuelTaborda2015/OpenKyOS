@@ -170,12 +170,12 @@ $arreglo = array(
         $tipo_documento = $id_parametro['id_parametro'];
         $descripcion_documento = $id_parametro['codigo'] . '_' . str_replace(" ", "_", $id_parametro['descripcion']);
         //$nombre_archivo = "AEP";
-        $this->nombreDocumento = $beneficiario['id_beneficiario'] . "_" . $descripcion_documento . "_" . $this->prefijo . '.pdf';
+        //$this->nombreDocumento = $beneficiario['id_beneficiario'] . "_" . $descripcion_documento . "_" . $this->prefijo . '.pdf';
 
-        //$this->nombreDocumento = $beneficiario['interior'] . "_" . $beneficiario['direccion_domicilio'] . "_" . $beneficiario['identificacion'] . "_Acta_Entrega_Portatil_" . $this->prefijo . '.pdf';
-        //$this->nombreCartel = $beneficiario['interior'] . "_" . $beneficiario['direccion_domicilio'] . "_" . $beneficiario['identificacion'] . "_Cartel_" . $this->prefijo . '.pdf';
+        $this->nombreDocumento = $beneficiario['manzana'] . "_" . $beneficiario['piso'] . "_" . $beneficiario['identificacion'] . "_" . $beneficiario['casa_apartamento'] . "_Acta_Entrega_Portatil_" . $this->prefijo . '.pdf';
+        $this->nombreCartel = $beneficiario['manzana'] . "_" . $beneficiario['piso'] . "_" . $beneficiario['identificacion'] . "_" . $beneficiario['casa_apartamento'] . "_Cartel_" . $this->prefijo . '.pdf';
 
-        $this->nombreCartel = $beneficiario['id_beneficiario'] . "_" . $beneficiario['identificacion'] . "_Cartel_" . $this->prefijo . '.pdf';
+        //$this->nombreCartel = $beneficiario['id_beneficiario'] . "_" . $beneficiario['identificacion'] . "_Cartel_" . $this->prefijo . '.pdf';
 
     }
     public function estruturaDocumento($beneficiario) {

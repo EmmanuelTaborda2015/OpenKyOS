@@ -301,7 +301,7 @@ class Sql extends \Sql {
                 $cadenaSql .= " JOIN interoperacion.contrato as cn ON cn.id_beneficiario=ep.id_beneficiario";
                 $cadenaSql .= " JOIN interoperacion.beneficiario_potencial as bn ON bn.id_beneficiario=ep.id_beneficiario";
                 $cadenaSql .= " WHERE ep.id >=412 ";
-                $cadenaSql .= " AND ep.id <= 491";
+                $cadenaSql .= " AND ep.id <= 666";
                 $cadenaSql .= " order by ep.id;";
                 break;
             // Sincronizar Alfresco
