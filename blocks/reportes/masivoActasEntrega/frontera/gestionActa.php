@@ -80,9 +80,9 @@ class GestionarContrato {
 			$cadenaSql = $this->miSql->getCadenaSql ( 'consultarInformacionActa', $generarActa );
 			$infoCertificado = $esteRecursoDB->ejecutarAcceso ( $cadenaSql, "busqueda" ) [0];
 			
+			$_REQUEST = $infoCertificado;
+			
 			if ($_REQUEST ['manzana'] == '1' || $_REQUEST ['manzana'] == '2') {
-				
-				$_REQUEST = $infoCertificado;
 				
 				$_REQUEST ['fecha_instalacion'] = date ( "d" ) . "-" . date ( "m" ) . "-" . date ( "Y" );
 				$miDocumento = new GenerarDocumento ();
