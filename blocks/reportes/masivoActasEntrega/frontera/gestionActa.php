@@ -82,7 +82,7 @@ class GestionarContrato {
 			
 			$_REQUEST = $infoCertificado;
 			
-			if ($_REQUEST ['manzana'] == '1' || $_REQUEST ['manzana'] == '2') {
+			if ($_REQUEST ['manzana'] != '1' && $_REQUEST ['manzana'] != '2') { 
 				
 				$_REQUEST ['fecha_instalacion'] = date ( "d" ) . "-" . date ( "m" ) . "-" . date ( "Y" );
 				$miDocumento = new GenerarDocumento ();
