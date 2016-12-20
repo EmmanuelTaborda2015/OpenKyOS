@@ -10,6 +10,13 @@ $estilo[$indice++] = "bootstrap.colorpickersliders.css";
 $estilo[$indice++] = "morris.css";
 $estilo[$indice++] = "ionicons.min.css";
 
+$estilo[$indice++] = "plugins-3.6.css";
+$estilo[$indice++] = "main-3.6.css";
+$estilo[$indice++] = "themes-3.1.css";
+
+$estilo[$indice++] = "miestilo.css";
+
+
 $indice++;
 
 $rutaBloque = $this->miConfigurador->getVariableConfiguracion("host");
