@@ -302,7 +302,7 @@ class Sql extends \Sql {
                 $cadenaSql .= " JOIN interoperacion.beneficiario_potencial as bn ON bn.id_beneficiario=ep.id_beneficiario";
                 $cadenaSql .= " WHERE ep.id >=412 ";
                 $cadenaSql .= " AND ep.id <= 666";
-                $cadenaSql .= " AND  cn.manzana IN('1','2')";
+                $cadenaSql .= " AND  cn.manzana NOT IN('1','2')";
                 $cadenaSql .= " order by ep.id;";
 
                 break;
