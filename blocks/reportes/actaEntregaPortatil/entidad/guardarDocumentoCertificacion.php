@@ -120,6 +120,7 @@ $arreglo = array(
     public function obtenerInformacionBeneficiario() {
 
         $cadenaSql = $this->miSql->getCadenaSql('consultaInformacionCertificador');
+        //echo $cadenaSql;exit;
         $beneficiario = $this->esteRecursoDB->ejecutarAcceso($cadenaSql, "busqueda");
         $this->beneficiario = $beneficiario;
 
@@ -172,8 +173,8 @@ $arreglo = array(
         //$nombre_archivo = "AEP";
         //$this->nombreDocumento = $beneficiario['id_beneficiario'] . "_" . $descripcion_documento . "_" . $this->prefijo . '.pdf';
 
-        $this->nombreDocumento = $beneficiario['manzana'] . "_" . $beneficiario['piso'] . "_" . $beneficiario['identificacion'] . "_" . $beneficiario['casa_apartamento'] . "_Acta_Entrega_Portatil_" . $this->prefijo . '.pdf';
-        $this->nombreCartel = $beneficiario['manzana'] . "_" . $beneficiario['piso'] . "_" . $beneficiario['identificacion'] . "_" . $beneficiario['casa_apartamento'] . "_Cartel_" . $this->prefijo . '.pdf';
+        $this->nombreDocumento = $beneficiario['manzana'] . "_" . $beneficiario['piso'] . "_" . $beneficiario['numero_identificacion_contrato'] . "_" . $beneficiario['casa_apartamento'] . "_Acta_Entrega_Portatil_" . $this->prefijo . '.pdf';
+        $this->nombreCartel = $beneficiario['manzana'] . "_" . $beneficiario['piso'] . "_" . $beneficiario['numero_identificacion_contrato'] . "_" . $beneficiario['casa_apartamento'] . "_Cartel_" . $this->prefijo . '.pdf';
 
         //$this->nombreCartel = $beneficiario['id_beneficiario'] . "_" . $beneficiario['identificacion'] . "_Cartel_" . $this->prefijo . '.pdf';
 
@@ -204,9 +205,9 @@ $arreglo = array(
         $anno = $fecha[2];
          */
         {
-            $tipo_vip = ($beneficiario['tipo_beneficiario'] == "1") ? "<b>X</b>" : "";
-            $tipo_residencial_1 = ($beneficiario['tipo_beneficiario'] == "2") ? (($beneficiario['estrato_socioeconomico'] == "1") ? "<b>X</b>" : "") : "";
-            $tipo_residencial_2 = ($beneficiario['tipo_beneficiario'] == "2") ? (($beneficiario['estrato_socioeconomico'] == "2") ? "<b>X</b>" : "") : "";
+            $tipo_vip = ($beneficiario['tipo_beneficiario_contrato'] == "1") ? "<b>X</b>" : "";
+            $tipo_residencial_1 = ($beneficiario['tipo_beneficiario_contrato'] == "2") ? (($beneficiario['estrato_socioeconomico'] == "1") ? "<b>X</b>" : "") : "";
+            $tipo_residencial_2 = ($beneficiario['tipo_beneficiario_contrato'] == "2") ? (($beneficiario['estrato_socioeconomico'] == "2") ? "<b>X</b>" : "") : "";
         }
 
         setlocale(LC_ALL, "es_CO.UTF-8");
@@ -306,11 +307,11 @@ $arreglo = array(
                                 </tr>
                                 <tr>
                                     <td style='width:25%;'>Beneficiario</td>
-                                    <td colspan='3' style='width:75%;text-align:center;'><b>" . $beneficiario['nombre'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "</b></td>
+                                    <td colspan='3' style='width:75%;text-align:center;'><b>" . $beneficiario['nombre_contrato'] . " " . $beneficiario['primer_apellido_contrato'] . " " . $beneficiario['segundo_apellido_contrato'] . "</b></td>
                                 </tr>
                                 <tr>
                                     <td style='width:25%;'>No de Identificación</td>
-                                    <td colspan='3' style='width:75%;text-align:center;'><b>" . number_format($beneficiario['identificacion'], 0, '', '.') . "</b></td>
+                                    <td colspan='3' style='width:75%;text-align:center;'><b>" . number_format($beneficiario['numero_identificacion_contrato'], 0, '', '.') . "</b></td>
                                 </tr>
                                 <tr>
                                     <td colspan='4'><b>Datos de Vivienda</b></td>
@@ -327,13 +328,13 @@ $arreglo = array(
                                 </tr>
                                 <tr>
                                     <td style='width:25%;'>Departamento</td>
-                                    <td style='width:25%;text-align:center;'>" . $beneficiario['departamento'] . "</td>
+                                    <td style='width:25%;text-align:center;'>" . $beneficiario['nombre_departamento'] . "</td>
                                     <td style='width:25%;'>Municipio</td>
-                                    <td style='width:25%;text-align:center;'>" . $beneficiario['municipio'] . "</td>
+                                    <td style='width:25%;text-align:center;'>" . $beneficiario['nombre_municipio'] . "</td>
                                 </tr>
                                 <tr>
                                     <td style='width:25%;'>Urbanización</td>
-                                    <td colspan='3' style='width:75%;text-align:center;'>" . $beneficiario['urbanizacion'] . "</td>
+                                    <td colspan='3' style='width:75%;text-align:center;'>" . $beneficiario['nombre_urbanizacion'] . "</td>
                                 </tr>
                             </table>
                             <br>
@@ -349,45 +350,45 @@ $arreglo = array(
                                     <table width:100%;>
                                         <tr>
                                             <td align='rigth'  style=' width:20%;'><b>Marca</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['marca']) . "</td>
+                                            <td align='rigth' style='width:30%;'>Hewlett Packard" . trim($beneficiario['marca']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Modelo</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['modelo']) . "</td>
+                                            <td align='rigth' style='width:30%;'>HP 245 G4 Notebook PC" . trim($beneficiario['modelo']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Serial</b></td>
                                             <td align='rigth' style='width:30%;'> </td>
                                             <td align='rigth' style=' width:20%;'>Procesador</td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['procesador']) . "</td>
+                                            <td align='rigth' style='width:30%;'>AMD A8-7410 4 cores 2.2 GHz" . trim($beneficiario['procesador']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Memoria RAM</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['memoria_ram']) . "</td>
+                                            <td align='rigth' style='width:30%;'>DDR3 4096 MB" . trim($beneficiario['memoria_ram']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Disco Duro</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['disco_duro']) . "</td>
+                                            <td align='rigth' style='width:30%;'>500 GB" . trim($beneficiario['disco_duro']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Sistema Operativo</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['sistema_operativo']) . "</td>
+                                            <td align='rigth' style='width:30%;'>Ubuntu" . trim($beneficiario['sistema_operativo']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Cámara</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['camara']) . "</td>
+                                            <td align='rigth' style='width:30%;'>Integrada 720 px HD" . trim($beneficiario['camara']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Audio</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['audio']) . "o</td>
+                                            <td align='rigth' style='width:30%;'>Integrado Estéreo" . trim($beneficiario['audio']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Batería</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['bateria']) . "</td>
+                                            <td align='rigth' style='width:30%;'>41440 mWh" . trim($beneficiario['bateria']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Tarjeta de Red (Alámbrica)</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['targeta_red_alambrica']) . "</td>
+                                            <td align='rigth' style='width:30%;'>Integrada" . trim($beneficiario['targeta_red_alambrica']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Tarjeta de Red (Inalámbrica)</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['targeta_red_inalambrica']) . "</td>
+                                            <td align='rigth' style='width:30%;'>Integrada" . trim($beneficiario['targeta_red_inalambrica']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth' style=' width:20%;'><b>Cargador</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['cargador']) . "</td>
+                                            <td align='rigth' style='width:30%;'>Smart AC 100 v a 120 v" . trim($beneficiario['cargador']) . "</td>
                                             <td align='rigth' style=' width:20%;'><b>Pantalla</b></td>
-                                            <td align='rigth' style='width:30%;'>" . trim($beneficiario['pantalla']) . "</td>
+                                            <td align='rigth' style='width:30%;'>HD SVA anti-brillo LED 14\"" . trim($beneficiario['pantalla']) . "</td>
                                         </tr>
                                         <tr>
                                             <td align='rigth'  style=' width:20%;'><b>Sitio web de soporte</b></td>
@@ -419,10 +420,10 @@ $arreglo = array(
                                     <br>&nbsp;
                                     <br>&nbsp;
                                     </td>
-                                    <td style='width:50%;text-align:center;'><b>" . $beneficiario['nombre'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "</b></td>
+                                    <td style='width:50%;text-align:center;'><b>" . $beneficiario['nombre_contrato'] . " " . $beneficiario['primer_apellido_contrato'] . " " . $beneficiario['segundo_apellido_contrato'] . "</b></td>
                                 </tr>
                                 <tr>
-                                    <td style='width:50%;text-align:center;'><b>" . number_format($beneficiario['identificacion'], 0, '', '.') . "</b></td>
+                                    <td style='width:50%;text-align:center;'><b>" . number_format($beneficiario['numero_identificacion_contrato'], 0, '', '.') . "</b></td>
                                 </tr>
                             </table>
 
@@ -512,9 +513,9 @@ $arreglo = array(
                                     <td style='width:100%;border:none;font-size:30px;'>
                                                 <br>
                                                 <b>CODIGO DANE Y ESTRATO: </b>" . $beneficiario['codigo_municipio'] . " - VIP" . "<br><br>
-                                                <b>MUNICIPIO:</b>  " . $beneficiario['municipio'] . "<br><br>
-                                                <b>SUBPROYECTO: </b>" . $beneficiario['urbanizacion'] . "<br><br>
-                                                <b>BENEFICIARIO: </b>" . $beneficiario['nombre'] . " " . $beneficiario['primer_apellido'] . " " . $beneficiario['segundo_apellido'] . "<br><br>
+                                                <b>MUNICIPIO:</b>  " . $beneficiario['nombre_municipio'] . "<br><br>
+                                                <b>SUBPROYECTO: </b>" . $beneficiario['nombre_urbanizacion'] . "<br><br>
+                                                <b>BENEFICIARIO: </b>" . $beneficiario['nombre_contrato'] . " " . $beneficiario['primer_apellido_contrato'] . " " . $beneficiario['segundo_apellido_contrato'] . "<br><br>
                                                 <b>DIRECCIÓN: </b>" . $beneficiario['direccion_domicilio'] . "  " . $anexo_dir . "<br><br>
                                                 <br>
                                                 <br>
